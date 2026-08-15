@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elastic Partner Skills Dashboard — FY'27</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --bl:#0077CC;--tl:#00BFB3;--pk:#F04E98;--yl:#FEC514;
+  --bg:#F4F6F9;--sf:#FFFFFF;--bd:#E4E7EC;--bds:#C9CDD8;
+  --tx:#1A1F36;--t2:#4A5568;--t3:#8A94A6;
+  --gn:#0D8A59;--gnb:#E8F7F0;--am:#D4730A;--amb:#FEF3E0;
+  --rd:#C0392B;--rdb:#FDEDEC;--bib:#EBF5FF;
+  --r:8px;--sh:0 1px 4px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:13px;line-height:1.5}
+.hdr{background:var(--bl);color:#fff;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:50px;position:sticky;top:0;z-index:200}
+.hdr-logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+.hdr-logo svg{width:26px;height:26px}
+.hdr-meta{font-size:10px;opacity:.7}
+.nav{background:#fff;border-bottom:1.5px solid var(--bd);display:flex;padding:0 20px;position:sticky;top:50px;z-index:199;overflow-x:auto}
+.nb{padding:11px 14px;font-size:11px;font-weight:500;color:var(--t3);cursor:pointer;border:none;background:none;border-bottom:2.5px solid transparent;white-space:nowrap;transition:color .15s}
+.nb:hover{color:var(--bl)}.nb.on{color:var(--bl);border-bottom-color:var(--bl)}
+.main{padding:16px 20px;max-width:1440px;margin:0 auto}
+.sec{display:none}.sec.on{display:block}
+.krow{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.kc{background:#fff;border-radius:var(--r);border:1px solid var(--bd);padding:12px 14px;box-shadow:var(--sh)}
+.kl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.kv{font-size:24px;font-weight:700;color:var(--bl);line-height:1}
+.ks{font-size:10px;color:var(--t3);margin-top:2px}
+.card{background:#fff;border-radius:var(--r);border:1px solid var(--bd);padding:14px 16px;box-shadow:var(--sh);margin-bottom:14px}
+.ct{font-size:13px;font-weight:600;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:720px){.g2,.g3{grid-template-columns:1fr}}
+.tw{overflow-x:auto;border-radius:6px;border:1px solid var(--bd)}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{padding:6px 9px;text-align:left;background:#F7F8FA;color:var(--t3);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--bd);white-space:nowrap;position:sticky;top:0;z-index:1}
+td{padding:6px 9px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FAFBFC}
+
+/* MULTI-SELECT PILL FILTER */
+.fbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:2px}
+.fl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
+.mp{position:relative;display:inline-block}
+.mpb{font-size:11px;padding:4px 9px;height:28px;border-radius:6px;border:1px solid var(--bds);background:#fff;color:var(--tx);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.mpb:hover{border-color:var(--bl)}
+.mdd{display:none;position:absolute;top:calc(100%+2px);left:0;z-index:400;background:#fff;border:1px solid var(--bds);border-radius:var(--r);min-width:190px;max-height:260px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.1);padding:4px 0}
+.mdd.open{display:block}
+.mopt{display:flex;align-items:center;gap:7px;padding:5px 11px;cursor:pointer;font-size:11px;color:var(--tx)}
+.mopt:hover{background:var(--bib)}
+.mopt input{accent-color:var(--bl);cursor:pointer}
+.tags{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px;min-height:0}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;background:var(--bib);color:var(--bl);font-size:10px;font-weight:500}
+.tag button{background:none;border:none;cursor:pointer;color:var(--bl);font-size:12px;line-height:1;padding:0}
+
+/* SCORE */
+.sc{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-size:10px;font-weight:700}
+.s5{background:#0D8A59;color:#fff}.s4{background:#2EA97B;color:#fff}
+.s3{background:#0077CC;color:#fff}.s2{background:#D4730A;color:#fff}
+.s1{background:#D0D5DD;color:#555}.s0{background:#F1F3F7;color:#aaa}
+
+/* BADGE */
+.b{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap}
+.bbl{background:var(--bib);color:var(--bl)}.bgt{background:#E0FAF8;color:#006B64}
+.bam{background:var(--amb);color:var(--am)}.brd{background:var(--rdb);color:var(--rd)}
+.bgn{background:var(--gnb);color:var(--gn)}.bgr{background:#F1F3F7;color:var(--t2);border:1px solid var(--bd)}
+.bpk{background:#FFF0F7;color:#B01767}
+
+/* DEMAND GRID */
+.dg{overflow-x:auto}
+.dg table td.dm{background:var(--amb);color:var(--am);font-weight:600;text-align:center}
+.dg table td.of{background:var(--gnb);color:var(--gn);font-weight:600;text-align:center}
+.dg table td.vp{background:var(--gnb);color:var(--gn);font-weight:700;text-align:center}
+.dg table td.vn{background:var(--rdb);color:var(--rd);font-weight:700;text-align:center}
+.dg table td.vz{background:#F1F3F7;color:var(--t3);text-align:center}
+.dinp{width:44px;border:1px solid var(--bd);border-radius:4px;text-align:center;padding:2px 3px;font-size:11px;background:#fff}
+.mth{background:#EBF5FF;color:var(--bl);font-size:9px!important}
+
+/* PARTNER CAP */
+.cap-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cap-bar{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.cap-fill{height:100%;border-radius:4px}
+.readiness-ready{color:var(--gn);font-weight:600;font-size:11px}
+.readiness-dev{color:var(--am);font-weight:600;font-size:11px}
+.readiness-gap{color:var(--rd);font-weight:600;font-size:11px}
+.bench-pill{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:700;color:#fff}
+
+/* GAP CHIP */
+.gc{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;margin:2px}
+.gc-h{background:var(--rdb);color:var(--rd)}.gc-m{background:var(--amb);color:var(--am)}
+
+.info{background:var(--bib);border:1px solid #B3D7F5;border-radius:6px;padding:9px 13px;font-size:11px;color:var(--bl);margin-bottom:12px}
+.foot{text-align:center;padding:16px;color:var(--t3);font-size:10px;border-top:1px solid var(--bd);margin-top:24px}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-logo">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="rgba(255,255,255,.15)"/><path d="M8 12.5c0-2 1.7-3.5 3.8-3.5h8.4c.5 0 .8.6.5 1L17 14H11c-.6 0-1 .4-1 1s.4 1 1 1h5.2l-2.7 3c-.1.1-.3.2-.5.2H11c-1.7 0-3-.9-3-2.8V12.5z" fill="#FEC514"/><path d="M24 19.5c0 2-1.7 3.5-3.8 3.5h-8.4c-.5 0-.8-.6-.5-1L15 18h6c.6 0 1-.4 1-1s-.4-1-1-1h-5.2l2.7-3c.1-.1.3-.2.5-.2H21c1.7 0 3 .9 3 2.8V19.5z" fill="#fff"/></svg>
+    Elastic Partner Skills Dashboard
+  </div>
+  <div class="hdr-meta">FY'27 · Refreshed August 2026</div>
+</header>
+<nav class="nav">
+  <button class="nb on" onclick="showTab('ov',this)">📊 Overview</button>
+  <button class="nb" onclick="showTab('pt',this)">🌍 Region Analysis</button>
+  <button class="nb" onclick="showTab('rs',this)">👥 Resources & Skills</button>
+  <button class="nb" onclick="showTab('ce',this)">🎓 Certifications</button>
+  <button class="nb" onclick="showTab('ci',this)">🔍 Capability Intelligence</button>
+  <button class="nb" onclick="showTab('hi',this)">📋 Hiring Strategy</button>
+</nav>
+<main class="main">
+
+<!-- OVERVIEW -->
+<div id="s-ov" class="sec on">
+  <div class="krow" id="ov-k"></div>
+  <div class="g2">
+    <div class="card"><div class="ct">Resources by region</div><div style="position:relative;height:195px"><canvas id="cRg"></canvas></div></div>
+    <div class="card"><div class="ct">Resources by partner</div><div style="position:relative;height:195px"><canvas id="cPr"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ct">Avg expertise by skill domain</div><div style="position:relative;height:210px"><canvas id="cRa"></canvas></div></div>
+    <div class="card"><div class="ct">Elastic certification coverage</div><div style="position:relative;height:210px"><canvas id="cCo"></canvas></div></div>
+  </div>
+</div>
+
+<!-- PARTNER INFORMATION -->
+<div id="s-pt" class="sec">
+
+<!-- ══ REGION ANALYSIS ══════════════════════════════════════════════════════ -->
+<div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:20px">
+
+  <!-- A. Region Snapshot KPI cards -->
+  <div style="flex:1;min-width:280px">
+    <div style="font-weight:700;font-size:13px;color:var(--nav);margin-bottom:10px;letter-spacing:.4px;text-transform:uppercase">A. Region Snapshot</div>
+    <div id="ra-snapshot" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+  </div>
+
+  <!-- B. Skill Heatmap by Region -->
+  <div style="flex:2;min-width:400px">
+    <div style="font-weight:700;font-size:13px;color:var(--nav);margin-bottom:10px;letter-spacing:.4px;text-transform:uppercase">C. Skill Coverage Heatmap by Region</div>
+    <div style="overflow-x:auto"><table id="ra-heatmap" style="width:100%;border-collapse:collapse;font-size:11px"></table></div>
+  </div>
+
+</div>
+
+<!-- B. Region x Partner Matrix -->
+<div style="margin-bottom:20px">
+  <div style="font-weight:700;font-size:13px;color:var(--nav);margin-bottom:10px;letter-spacing:.4px;text-transform:uppercase">B. Region × Partner Headcount Matrix</div>
+  <div style="overflow-x:auto"><table id="ra-matrix" style="width:100%;border-collapse:collapse;font-size:11px"></table></div>
+</div>
+
+<!-- D. Region comparison bars -->
+<div>
+  <div style="font-weight:700;font-size:13px;color:var(--nav);margin-bottom:10px;letter-spacing:.4px;text-transform:uppercase">D. Average Skill Domain Scores by Region</div>
+  <div id="ra-bars" style="display:flex;flex-wrap:wrap;gap:20px"></div>
+</div>
+
+<script>
+(function buildRegionAnalysis() {
+  const SKILL_KEYS = ['GenAI','MLSearch','Analytics','AppSearch','VectorSearch',
+    'APM','Logs','Metrics','Endpoint','SIEM','SecAnal','Dashboards','ECK','ECE','ESS',
+    'CloudMig','MachineLrn','Arch','Splunk','K8s','Docker','Kibana','Logstash','StackMon'];
+  const SKILL_LABELS = ['GenAI','ML Search','Analytics','App Search','Vector Search',
+    'APM','Logs','Metrics','Endpoint','SIEM','Sec Analytics','Dashboards','ECK','ECE','ESS',
+    'Cloud Mig.','Machine Lrn','Architecture','Splunk','Kubernetes','Docker',
+    'Kibana','Logstash','Stack Mon.'];
+  const DOMAINS = {
+    'Search':        ['GenAI','MLSearch','Analytics','AppSearch','VectorSearch'],
+    'Observability': ['APM','Logs','Metrics'],
+    'Security':      ['Endpoint','SIEM','SecAnal'],
+    'General':       ['Dashboards','ECK','ECE','ESS','CloudMig','MachineLrn','Arch','Splunk'],
+    'Infra':         ['K8s','Docker'],
+    'Logging':       ['Kibana','Logstash','StackMon'],
+  };
+  const DOMAIN_COLORS = {
+    'Search':'#00BFB3','Observability':'#0D8A59','Security':'#F04E98',
+    'General':'#6D28D9','Infra':'#343741','Logging':'#D4730A'
+  };
+
+  function avg(arr) {
+    const v = arr.filter(x => x > 0);
+    return v.length ? (v.reduce((a,b)=>a+b,0)/v.length) : 0;
+  }
+  function scColor(v) {
+    if (v >= 4.5) return '#0D8A59';
+    if (v >= 3.5) return '#2EA97B';
+    if (v >= 2.5) return '#0077CC';
+    if (v >= 1.5) return '#D4730A';
+    if (v >= 0.5) return '#B0B8C4';
+    return '#E5E7EB';
+  }
+  function scText(v) { return v >= 1.5 ? '#fff' : '#555'; }
+
+  // Group data by region
+  const regions = [...new Set(D.map(d=>d.r))].sort();
+  const partners = [...new Set(D.map(d=>d.p))].sort();
+  const byRegion = {};
+  regions.forEach(r => { byRegion[r] = D.filter(d=>d.r===r); });
+
+  // ── A. Snapshot KPI cards ──────────────────────────────────────────────────
+  const snap = document.getElementById('ra-snapshot');
+  const REGION_COLORS = {
+    'EMEA':'#0077CC','APAC':'#0D8A59','India':'#F04E98',
+    'Germany':'#6D28D9','AMER':'#D4730A'
+  };
+  regions.forEach(r => {
+    const res = byRegion[r];
+    const pts = [...new Set(res.map(d=>d.p))];
+    const certs = res.filter(d =>
+      [d.c.E,d.c.A,d.c.O,d.c.S].some(v=>v&&v!='null'&&v!='No'&&!v.toLowerCase().includes('expir'))
+    ).length;
+    const trainers = res.filter(d=>(d.tr||'').toLowerCase()==='yes').length;
+    const col = REGION_COLORS[r] || '#4A5568';
+    const card = document.createElement('div');
+    card.style.cssText = `background:#fff;border:1px solid #E2E8F0;border-radius:10px;
+      padding:14px 18px;min-width:200px;border-top:4px solid ${col}`;
+    card.innerHTML = `
+      <div style="font-weight:800;font-size:18px;color:${col}">${r}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px">
+        <div><div style="font-size:22px;font-weight:800;color:#1A1F36">${res.length}</div>
+          <div style="font-size:10px;color:#8892A4;text-transform:uppercase">Resources</div></div>
+        <div><div style="font-size:22px;font-weight:800;color:#1A1F36">${pts.length}</div>
+          <div style="font-size:10px;color:#8892A4;text-transform:uppercase">Partners</div></div>
+        <div><div style="font-size:22px;font-weight:800;color:#0D8A59">${certs}</div>
+          <div style="font-size:10px;color:#8892A4;text-transform:uppercase">Certified</div></div>
+        <div><div style="font-size:22px;font-weight:800;color:#0077CC">${trainers}</div>
+          <div style="font-size:10px;color:#8892A4;text-transform:uppercase">Trainers</div></div>
+      </div>
+      <div style="margin-top:10px;font-size:10px;color:#4A5568">
+        ${pts.map(p=>`<span style="background:#F4F6F9;border-radius:4px;padding:1px 5px;margin:1px 2px 1px 0;display:inline-block">${p}</span>`).join('')}
+      </div>`;
+    snap.appendChild(card);
+  });
+
+  // ── B. Region × Partner Matrix ─────────────────────────────────────────────
+  const mt = document.getElementById('ra-matrix');
+  const thStyle = 'padding:6px 10px;font-size:10px;font-weight:700;text-align:center;white-space:nowrap';
+  const tdStyle = 'padding:6px 10px;text-align:center;font-size:11px';
+
+  let mHtml = `<thead><tr>
+    <th style="${thStyle};background:#1A1F36;color:#fff;text-align:left;border-radius:6px 0 0 0">Region</th>
+    ${partners.map(p=>`<th style="${thStyle};background:#1A1F36;color:#fff;white-space:nowrap">${p}</th>`).join('')}
+    <th style="${thStyle};background:#0077CC;color:#fff;border-radius:0 6px 0 0">TOTAL</th>
+  </tr></thead><tbody>`;
+
+  regions.forEach((r,ri) => {
+    const bg = ri%2===0?'#F7F9FC':'#fff';
+    const res = byRegion[r];
+    const total = res.length;
+    mHtml += `<tr style="background:${bg}">
+      <td style="${tdStyle};font-weight:700;color:#1A1F36;text-align:left;background:${bg}">${r}</td>
+      ${partners.map(p=>{
+        const cnt = res.filter(d=>d.p===p).length;
+        return cnt > 0
+          ? `<td style="${tdStyle};font-weight:700;color:#0077CC">${cnt}</td>`
+          : `<td style="${tdStyle};color:#D0D5E0">—</td>`;
+      }).join('')}
+      <td style="${tdStyle};font-weight:800;color:#fff;background:#0077CC">${total}</td>
+    </tr>`;
+  });
+
+  // Totals row
+  mHtml += `<tr style="background:#1A1F36">
+    <td style="${tdStyle};font-weight:700;color:#fff;text-align:left">TOTAL</td>
+    ${partners.map(p=>{
+      const cnt = D.filter(d=>d.p===p).length;
+      return `<td style="${tdStyle};font-weight:700;color:#FEC514">${cnt}</td>`;
+    }).join('')}
+    <td style="${tdStyle};font-weight:800;color:#FEC514">${D.length}</td>
+  </tr></tbody>`;
+  mt.innerHTML = mHtml;
+
+  // ── C. Skill Heatmap by Region ─────────────────────────────────────────────
+  const ht = document.getElementById('ra-heatmap');
+  // Show key skills (subset for readability)
+  const heatSkills = ['GenAI','MLSearch','VectorSearch','APM','Logs','SIEM','SecAnal',
+    'ECK','CloudMig','K8s','Docker','Kibana'];
+  const heatLabels = ['GenAI','ML Search','Vector Search','APM','Logs','SIEM',
+    'Sec Analytics','ECK','Cloud Mig.','K8s','Docker','Kibana'];
+
+  let hHtml = `<thead><tr>
+    <th style="${thStyle};background:#2D3748;color:#fff;text-align:left">Region</th>
+    <th style="${thStyle};background:#2D3748;color:#fff">Resources</th>
+    ${heatLabels.map(l=>`<th style="${thStyle};background:#2D3748;color:#fff;font-size:9px">${l}</th>`).join('')}
+  </tr></thead><tbody>`;
+
+  regions.forEach((r,ri) => {
+    const res = byRegion[r];
+    const bg = ri%2===0?'#F7F9FC':'#fff';
+    hHtml += `<tr style="background:${bg}">
+      <td style="${tdStyle};font-weight:700;color:#1A1F36;text-align:left">${r}</td>
+      <td style="${tdStyle};font-weight:600;color:#0077CC">${res.length}</td>
+      ${heatSkills.map(sk=>{
+        const v = avg(res.map(d=>d.s[sk]||0));
+        const vr = Math.round(v*10)/10;
+        return `<td style="${tdStyle};background:${scColor(v)};color:${scText(v)};font-weight:${v>=3.5?'700':'400'}">${vr||'—'}</td>`;
+      }).join('')}
+    </tr>`;
+  });
+  hHtml += '</tbody>';
+  ht.innerHTML = hHtml;
+
+  // ── D. Domain average bars by region ──────────────────────────────────────
+  const bars = document.getElementById('ra-bars');
+  regions.forEach(r => {
+    const res = byRegion[r];
+    const col = REGION_COLORS[r] || '#4A5568';
+    const card = document.createElement('div');
+    card.style.cssText = `background:#fff;border:1px solid #E2E8F0;border-radius:10px;
+      padding:16px 20px;min-width:240px;flex:1`;
+    let inner = `<div style="font-weight:700;font-size:13px;color:${col};margin-bottom:12px">${r} — Domain Averages</div>`;
+    Object.entries(DOMAINS).forEach(([domain, skills]) => {
+      const v = avg(res.flatMap(d=>skills.map(sk=>d.s[sk]||0)));
+      const pct = Math.round(v/5*100);
+      const dc = DOMAIN_COLORS[domain];
+      inner += `<div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+          <span style="font-weight:600;color:#2D3748">${domain}</span>
+          <span style="font-weight:700;color:${dc}">${Math.round(v*10)/10}/5</span>
+        </div>
+        <div style="height:8px;background:#F0F2F5;border-radius:4px;overflow:hidden">
+          <div style="width:${pct}%;height:100%;background:${dc};border-radius:4px;transition:width .5s"></div>
+        </div>
+      </div>`;
+    });
+    card.innerHTML = inner;
+    bars.appendChild(card);
+  });
+
+})();
+</script>
+
+id="s-rs" class="sec">
+  <div class="fbar" id="rs-filters">
+    <div class="fg"><div class="fl">Region (multi)</div>
+      <div class="mp" id="mp-rr"><button class="mpb" onclick="tg('mp-rr',event)">All regions ▾</button><div class="mdd" id="md-rr"></div></div>
+    </div>
+    <div class="fg"><div class="fl">Partner (multi)</div>
+      <div class="mp" id="mp-rp"><button class="mpb" onclick="tg('mp-rp',event)">All partners ▾</button><div class="mdd" id="md-rp"></div></div>
+    </div>
+    <div class="fg"><div class="fl">Min score (multi)</div>
+      <div class="mp" id="mp-rm"><button class="mpb" onclick="tg('mp-rm',event)">Any score ▾</button><div class="mdd" id="md-rm"></div></div>
+    </div>
+    <div class="fg"><div class="fl">Location/TZ (multi)</div>
+      <div class="mp" id="mp-rl"><button class="mpb" onclick="tg('mp-rl',event)">All locations ▾</button><div class="mdd" id="md-rl"></div></div>
+    </div>
+    <div class="fg"><div class="fl">Country (multi)</div>
+      <div class="mp" id="mp-rc"><button class="mpb" onclick="tg('mp-rc',event)">All countries ▾</button><div class="mdd" id="md-rc"></div></div>
+    </div>
+    <div class="fg"><div class="fl">Language (multi)</div>
+      <div class="mp" id="mp-rg"><button class="mpb" onclick="tg('mp-rg',event)">All languages ▾</button><div class="mdd" id="md-rg"></div></div>
+    </div>
+    <div class="fg"><div class="fl">Skills (multi)</div>
+      <div class="mp" id="mp-rs"><button class="mpb" onclick="tg('mp-rs',event)">Choose skills ▾</button><div class="mdd" id="md-rs"></div></div>
+    </div>
+  </div>
+  <div class="tags" id="rs-tags"></div>
+  <div id="rs-tbl"></div>
+</div>
+
+<!-- CERTIFICATIONS -->
+<div id="s-ce" class="sec">
+  <div class="krow" id="ce-k"></div>
+  <div class="g2">
+    <div class="card"><div class="ct">Active vs expired by cert type</div><div style="position:relative;height:195px"><canvas id="cCT"></canvas></div></div>
+    <div class="card"><div class="ct">Active certs per partner</div><div style="position:relative;height:195px"><canvas id="cCP"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ct">✅ Certified resources</div><div id="ce-det"></div></div>
+    <div class="card"><div class="ct">⚠️ Upskill recommendations</div><div id="ce-up"></div></div>
+  </div>
+</div>
+
+<!-- CAPABILITY INTELLIGENCE -->
+<div id="s-ci" class="sec">
+  <div class="info">💡 This tab replaces individual resource availability tracking (which cannot be maintained in real-time) with partner-level capability analysis — helping leadership decide <strong>which partner to engage</strong> for a given demand.</div>
+  <div class="fbar">
+    <div class="fg"><div class="fl">Analyse skill</div>
+      <select id="ci-sk" onchange="dCi()" style="font-size:11px;padding:4px 8px;height:28px;border-radius:6px;border:1px solid var(--bds);background:#fff"></select>
+    </div>
+    <div class="fg"><div class="fl">Min depth required</div>
+      <select id="ci-mn" onchange="dCi()" style="font-size:11px;padding:4px 8px;height:28px;border-radius:6px;border:1px solid var(--bds);background:#fff">
+        <option value="3">≥ 3 Comfortable</option><option value="4">≥ 4 Strong</option><option value="5">5 Expert only</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Additional required skills</div>
+      <div class="mp" id="mp-cs"><button class="mpb" onclick="tg('mp-cs',event)">+ Add skills ▾</button><div class="mdd" id="md-cs"></div></div>
+    </div>
+  </div>
+  <div class="tags" id="ci-tags"></div>
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card"><div class="ct">Partner readiness for selected skill</div><div style="position:relative;height:200px"><canvas id="cCI"></canvas></div></div>
+    <div class="card"><div class="ct">Bench depth — resources scoring ≥ 4 per skill area</div><div style="position:relative;height:200px"><canvas id="cBD"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ct">Partner scorecard — selected skill</div><div id="ci-sc"></div></div>
+    <div class="card"><div class="ct">Multi-skill bench — partners meeting ALL selected skills</div><div id="ci-ms"></div></div>
+  </div>
+</div>
+
+<!-- HIRING STRATEGY -->
+<div id="s-hi" class="sec">
+  <div class="info">Leadership view: regions and skill areas where current partner coverage is insufficient, guiding new partner onboarding decisions.</div>
+  <div class="g2">
+    <div class="card"><div class="ct">Hiring priority matrix by region</div><div id="hi-mt"></div></div>
+    <div class="card"><div class="ct">Critical skill gaps by region (avg score &lt; 2.5)</div><div id="hi-gp"></div></div>
+  </div>
+  <div class="card"><div class="ct">Skill coverage heatmap — partner × key skills</div><div id="hi-hm" style="overflow-x:auto"></div></div>
+</div>
+
+</main>
+<div class="foot">Elastic Partner Skills Dashboard · FY'27 · Confidential — for internal distribution only</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA (refreshed from Google Sheet, July 2026)
+// ══════════════════════════════════════════════════════
+const SK=['GenAI','MLSearch','Analytics','AppSearch','VectorSearch','APM','Logs','Metrics','Endpoint','SIEM','SecAnal','Dashboards','ECK','ECE','ESS','CloudMig','MachineLrn','Arch','Splunk','K8s','Docker','Kibana','Logstash','StackMon'];
+const SL={GenAI:'GenAI',MLSearch:'ML Search',Analytics:'Analytics',AppSearch:'App Search',VectorSearch:'Vector Search',APM:'APM',Logs:'Logs',Metrics:'Metrics',Endpoint:'Endpoint',SIEM:'SIEM',SecAnal:'Security Analytics',Dashboards:'Dashboards',ECK:'ECK',ECE:'ECE',ESS:'ESS',CloudMig:'Cloud Migration',MachineLrn:'Machine Learning',Arch:'Architecture',Splunk:'Splunk',K8s:'Kubernetes',Docker:'Docker',Kibana:'Kibana',Logstash:'Logstash',StackMon:'Stack Monitoring'};
+const MONTHS=['May-26','Jun-26','Jul-26','Aug-26','Sep-26','Oct-26','Nov-26','Dec-26','Jan-27','Feb-27','Mar-27','Apr-27','May-27'];
+const CS=['#0077CC','#00BFB3','#F04E98','#FEC514','#FF7E00','#343741','#0D8A59','#9B30FF','#E05E5E','#1DE9B6','#6366F1','#F59E0B'];
+
+const D=[
+{r:'EMEA',p:'GIOS',n:'Rajsekhar Haldar',e:'',loc:'UK/GMT',lg:'English',ct:'US/UK/EMEA',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:4,Analytics:4,AppSearch:5,VectorSearch:3,APM:3,Logs:5,Metrics:4,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:3,ECE:3,ESS:5,CloudMig:5,MachineLrn:4,Arch:5,Splunk:3,K8s:3,Docker:3,Kibana:5,Logstash:5,StackMon:5},c:{E:'Jul 2026',A:'Expired 2025',O:'Feb 2028',S:null},cl:'No',tr:'Yes'},
+{r:'APAC',p:'GIOS',n:'Jeevanandham Selvaraj',e:'',loc:'India/IST',lg:'English',ct:'EMEA Asia, US',dl:'Virtual, Onsite, VISA',s:{GenAI:3,MLSearch:3,Analytics:3,AppSearch:4,VectorSearch:3,APM:4,Logs:4,Metrics:4,Endpoint:3,SIEM:4,SecAnal:3,Dashboards:5,ECK:2,ECE:3,ESS:5,CloudMig:5,MachineLrn:4,Arch:5,Splunk:2,K8s:2,Docker:3,Kibana:5,Logstash:4,StackMon:5},c:{E:null,A:'Feb 2027',O:'Mar 2027',S:null},cl:'No',tr:'Yes'},
+{r:'APAC',p:'GIOS',n:'Pratik Wadodkar',e:'',loc:'India/IST',lg:'English',ct:'EMEA, APJ',dl:'Virtual, Onsite, VISA',s:{GenAI:1,MLSearch:1,Analytics:3,AppSearch:3,VectorSearch:2,APM:3,Logs:4,Metrics:4,Endpoint:3,SIEM:3,SecAnal:3,Dashboards:5,ECK:2,ECE:4,ESS:5,CloudMig:5,MachineLrn:3,Arch:4,Splunk:1,K8s:1,Docker:3,Kibana:5,Logstash:5,StackMon:5},c:{E:'Expired Mar 2024',A:null,O:'Expired Feb 2026',S:null},cl:'No',tr:'Yes'},
+{r:'APAC',p:'GIOS',n:'Kartikeyan Singh',e:'',loc:'India/IST',lg:'English',ct:'EMEA Asia, US',dl:'Virtual, Onsite, VISA',s:{GenAI:1,MLSearch:1,Analytics:2,AppSearch:0,VectorSearch:1,APM:4,Logs:4,Metrics:4,Endpoint:3,SIEM:3,SecAnal:3,Dashboards:4,ECK:2,ECE:3,ESS:3,CloudMig:4,MachineLrn:1,Arch:2,Splunk:3,K8s:1,Docker:3,Kibana:4,Logstash:4,StackMon:3},c:{E:'Sep 2027',A:'Expired Sep 2024',O:null,S:null},cl:'No',tr:'No'},
+{r:'APAC',p:'GIOS',n:'Aditi Prasad',e:'',loc:'India/IST',lg:'English',ct:'EMEA Asia, US',dl:'Virtual, Onsite, VISA',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:0,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:2,SIEM:1,SecAnal:0,Dashboards:4,ECK:1,ECE:2,ESS:2,CloudMig:4,MachineLrn:2,Arch:3,Splunk:0,K8s:0,Docker:3,Kibana:3,Logstash:4,StackMon:2},c:{E:'Sep 2027',A:null,O:null,S:null},cl:'No',tr:'No'},
+{r:'APAC',p:'GIOS',n:'Akshat Bhagat',e:'',loc:'India/IST',lg:'English',ct:'EMEA Asia, US',dl:'Virtual, Onsite, VISA',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:0,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:2,SIEM:1,SecAnal:1,Dashboards:4,ECK:1,ECE:2,ESS:2,CloudMig:4,MachineLrn:4,Arch:3,Splunk:0,K8s:1,Docker:2,Kibana:4,Logstash:4,StackMon:2},c:{E:'Sep 2027',A:null,O:null,S:null},cl:'No',tr:'No'},
+{r:'APAC',p:'GIOS',n:'Akshay Varma',e:'',loc:'India/IST',lg:'English',ct:'EMEA Asia, US',dl:'Virtual, Onsite, VISA',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:1,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:2,SIEM:1,SecAnal:1,Dashboards:4,ECK:1,ECE:2,ESS:2,CloudMig:4,MachineLrn:3,Arch:3,Splunk:0,K8s:1,Docker:3,Kibana:4,Logstash:4,StackMon:2},c:{E:'Sep 2027',A:null,O:null,S:null},cl:'No',tr:'No'},
+{r:'APAC',p:'GIOS',n:'Laxmi Sardar',e:'',loc:'India/IST',lg:'English',ct:'EMEA Asia, US',dl:'Virtual, Onsite, VISA',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:0,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:2,SIEM:1,SecAnal:1,Dashboards:4,ECK:1,ECE:2,ESS:2,CloudMig:4,MachineLrn:3,Arch:3,Splunk:0,K8s:1,Docker:3,Kibana:4,Logstash:4,StackMon:2},c:{E:'Sep 2027',A:null,O:null,S:null},cl:'No',tr:'No'},
+{r:'APAC',p:'GIOS',n:'Sonal Honny',e:'',loc:'India/IST',lg:'English',ct:'EMEA Asia, US',dl:'Virtual, Onsite, VISA',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:1,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:2,SIEM:1,SecAnal:0,Dashboards:4,ECK:1,ECE:2,ESS:2,CloudMig:3,MachineLrn:2,Arch:3,Splunk:1,K8s:1,Docker:2,Kibana:4,Logstash:4,StackMon:2},c:{E:'Sep 2027',A:null,O:null,S:null},cl:'No',tr:'No'},
+{r:'EMEA',p:'CIVIR',n:'Ivan Frias Molina',e:'',loc:'Europe/Madrid',lg:'Spanish',ct:'Spain',dl:'Virtual',s:{GenAI:5,MLSearch:5,Analytics:5,AppSearch:4,VectorSearch:5,APM:5,Logs:5,Metrics:5,Endpoint:3,SIEM:3,SecAnal:3,Dashboards:5,ECK:3,ECE:3,ESS:3,CloudMig:4,MachineLrn:5,Arch:5,Splunk:2,K8s:3,Docker:3,Kibana:5,Logstash:5,StackMon:5},c:{E:'Dec 2022',A:null,O:null,S:null},cl:'N/A',tr:'Yes'},
+{r:'EMEA',p:'CIVIR',n:'Alberto Biesca',e:'',loc:'Europe/Madrid',lg:'Spanish',ct:'Spain',dl:'Virtual',s:{GenAI:5,MLSearch:4,Analytics:5,AppSearch:4,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:4,SIEM:3,SecAnal:3,Dashboards:5,ECK:1,ECE:3,ESS:3,CloudMig:4,MachineLrn:4,Arch:5,Splunk:2,K8s:1,Docker:4,Kibana:5,Logstash:5,StackMon:5},c:{E:'Feb 2025',A:'Aug 2025',O:'May 2025',S:null},cl:'N/A',tr:'Yes'},
+{r:'EMEA',p:'CIVIR',n:'Ivan Gil',e:'',loc:'Europe/Madrid',lg:'Spanish',ct:'Spain',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:1,VectorSearch:1,APM:3,Logs:4,Metrics:4,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:4,ECK:2,ECE:4,ESS:2,CloudMig:2,MachineLrn:3,Arch:4,Splunk:1,K8s:2,Docker:4,Kibana:4,Logstash:4,StackMon:4},c:{E:'Mar 2024',A:null,O:null,S:null},cl:'N/A',tr:'No'},
+{r:'EMEA',p:'CIVIR',n:'Rodrigo Gomez Martinez',e:'',loc:'Europe/Madrid',lg:'Spanish',ct:'Spain',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:1,VectorSearch:1,APM:2,Logs:2,Metrics:2,Endpoint:3,SIEM:3,SecAnal:3,Dashboards:4,ECK:1,ECE:3,ESS:3,CloudMig:1,MachineLrn:1,Arch:3,Splunk:2,K8s:2,Docker:3,Kibana:4,Logstash:4,StackMon:4},c:{E:null,A:null,O:null,S:null},cl:'No',tr:'No'},
+{r:'EMEA',p:'CIVIR',n:'Alvaro Hernandez Miro',e:'',loc:'Europe/Madrid',lg:'Spanish',ct:'Spain',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:1,VectorSearch:1,APM:1,Logs:3,Metrics:2,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:1,ECK:1,ECE:3,ESS:1,CloudMig:1,MachineLrn:2,Arch:2,Splunk:1,K8s:1,Docker:2,Kibana:3,Logstash:3,StackMon:2},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'CIVIR',n:'Angel Patricio Olivares Espinosa',e:'',loc:'Europe/Madrid',lg:'Spanish',ct:'Spain',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:1,VectorSearch:1,APM:2,Logs:4,Metrics:3,Endpoint:1,SIEM:2,SecAnal:2,Dashboards:4,ECK:2,ECE:2,ESS:1,CloudMig:1,MachineLrn:3,Arch:3,Splunk:1,K8s:2,Docker:2,Kibana:5,Logstash:4,StackMon:4},c:{E:null,A:null,O:null,S:null},cl:'N/A',tr:'No'},
+{r:'EMEA',p:'Devoteam',n:'Ali Dursun',e:'',loc:'NL/BENELUX/ CET',lg:'English/Turkish',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:3,Analytics:2,AppSearch:2,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:5,ECK:5,ECE:3,ESS:5,CloudMig:5,MachineLrn:2,Arch:5,Splunk:2,K8s:5,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:'Jun 2022',A:'Aug 2022',O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Rajesh Narayanan',e:'',loc:'NL/BENELUX/ CET',lg:'English',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:2,Analytics:5,AppSearch:3,VectorSearch:1,APM:2,Logs:4,Metrics:5,Endpoint:3,SIEM:2,SecAnal:2,Dashboards:5,ECK:2,ECE:1,ESS:1,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:3,Docker:2,Kibana:5,Logstash:5,StackMon:3},c:{E:'Jun 2022',A:'Mar 2022',O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Prince Sharma',e:'',loc:'NL/BENELUX/ CET',lg:'English/Hindi',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:4,MLSearch:4,Analytics:3,AppSearch:4,VectorSearch:5,APM:3,Logs:3,Metrics:3,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:5,ECK:0,ECE:0,ESS:0,CloudMig:3,MachineLrn:3,Arch:3,Splunk:1,K8s:1,Docker:2,Kibana:5,Logstash:4,StackMon:5},c:{E:'Jun 2026',A:'Jun 2026',O:'Aug 2023',S:'Aug 2023'},cl:null,tr:null},
+{r:'EMEA',p:'Devoteam',n:'Wouter Tempelman',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:2,VectorSearch:1,APM:4,Logs:4,Metrics:4,Endpoint:2,SIEM:1,SecAnal:2,Dashboards:5,ECK:1,ECE:1,ESS:1,CloudMig:2,MachineLrn:3,Arch:3,Splunk:1,K8s:1,Docker:2,Kibana:5,Logstash:4,StackMon:4},c:{E:'Apr 2025',A:'May 2024',O:'Sep 2024',S:null},cl:'Govt NL (VOG)',tr:null},
+{r:'EMEA',p:'Devoteam',n:'Rick van de Vaart',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:2,Analytics:2,AppSearch:1,VectorSearch:1,APM:5,Logs:5,Metrics:5,Endpoint:3,SIEM:2,SecAnal:2,Dashboards:5,ECK:1,ECE:1,ESS:1,CloudMig:1,MachineLrn:4,Arch:5,Splunk:2,K8s:1,Docker:1,Kibana:5,Logstash:5,StackMon:5},c:{E:'Jan 2025',A:'Mar 2024',O:'May 2024',S:null},cl:'Govt NL (VOG)',tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Gert-Jan Coevert',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:2,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:1,APM:5,Logs:5,Metrics:5,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:4,ECK:2,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:5,Splunk:1,K8s:3,Docker:3,Kibana:5,Logstash:5,StackMon:5},c:{E:'Feb 2025',A:null,O:null,S:null},cl:'Govt NL (VOG)',tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Jeroen Martens',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:2,VectorSearch:1,APM:4,Logs:4,Metrics:4,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:5,ECK:1,ECE:1,ESS:1,CloudMig:2,MachineLrn:3,Arch:3,Splunk:1,K8s:2,Docker:3,Kibana:5,Logstash:5,StackMon:4},c:{E:'Dec 2025',A:'May 2024',O:'Jul 2024',S:null},cl:'Govt NL (VOG)',tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Nikita Nikushkin',e:'',loc:'NL/BENELUX/ CET',lg:'English/Russian',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:2,MLSearch:2,Analytics:4,AppSearch:2,VectorSearch:2,APM:5,Logs:5,Metrics:5,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:5,ECK:5,ECE:1,ESS:1,CloudMig:1,MachineLrn:3,Arch:4,Splunk:1,K8s:5,Docker:5,Kibana:5,Logstash:5,StackMon:4},c:{E:'Feb 2025',A:'May 2023',O:'Jun 2023',S:null},cl:'Govt NL (VOG)',tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Maarten Corver',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:5,Analytics:5,AppSearch:2,VectorSearch:1,APM:3,Logs:4,Metrics:4,Endpoint:3,SIEM:2,SecAnal:3,Dashboards:5,ECK:2,ECE:5,ESS:5,CloudMig:4,MachineLrn:5,Arch:4,Splunk:1,K8s:1,Docker:1,Kibana:5,Logstash:5,StackMon:5},c:{E:'Apr 2021',A:null,O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Lloyd Drost',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:3,Analytics:3,AppSearch:2,VectorSearch:1,APM:2,Logs:4,Metrics:4,Endpoint:4,SIEM:3,SecAnal:3,Dashboards:4,ECK:1,ECE:1,ESS:2,CloudMig:1,MachineLrn:3,Arch:3,Splunk:1,K8s:1,Docker:3,Kibana:5,Logstash:4,StackMon:5},c:{E:null,A:'Aug 2025',O:'Apr 2025',S:'Feb 2026'},cl:'Govt NL (VOG)',tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Tim Krijger',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:2,Analytics:2,AppSearch:2,VectorSearch:3,APM:4,Logs:5,Metrics:5,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:5,ECK:5,ECE:5,ESS:4,CloudMig:4,MachineLrn:3,Arch:4,Splunk:1,K8s:4,Docker:4,Kibana:5,Logstash:5,StackMon:5},c:{E:'May 2020',A:'Apr 2021',O:'Apr 2023',S:null},cl:'Govt NL, Police NL',tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Patrick Broek',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:2,Analytics:5,AppSearch:1,VectorSearch:1,APM:2,Logs:3,Metrics:5,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:2,ECE:5,ESS:2,CloudMig:3,MachineLrn:2,Arch:4,Splunk:1,K8s:3,Docker:3,Kibana:5,Logstash:2,StackMon:4},c:{E:'Apr 2021',A:'Aug 2020',O:'Sep 2023',S:'Sep 2025'},cl:'Police NL',tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Amnon Hoppe',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:0,MLSearch:0,Analytics:4,AppSearch:4,VectorSearch:0,APM:0,Logs:0,Metrics:0,Endpoint:0,SIEM:0,SecAnal:0,Dashboards:5,ECK:0,ECE:3,ESS:0,CloudMig:0,MachineLrn:4,Arch:0,Splunk:3,K8s:0,Docker:1,Kibana:0,Logstash:0,StackMon:0},c:{E:'Mar 2024',A:null,O:null,S:null},cl:'Police NL',tr:null},
+{r:'EMEA',p:'Devoteam',n:'Tako Grijpma',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:2,MLSearch:2,Analytics:1,AppSearch:2,VectorSearch:1,APM:4,Logs:5,Metrics:5,Endpoint:3,SIEM:1,SecAnal:1,Dashboards:5,ECK:1,ECE:1,ESS:2,CloudMig:3,MachineLrn:3,Arch:4,Splunk:1,K8s:1,Docker:1,Kibana:5,Logstash:4,StackMon:4},c:{E:null,A:null,O:null,S:null},cl:'Govt NL (VOG)',tr:null},
+{r:'EMEA',p:'Devoteam',n:'Adil Mohammad',e:'',loc:'NL/BENELUX/ CET',lg:'English',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:1,APM:2,Logs:3,Metrics:4,Endpoint:3,SIEM:3,SecAnal:2,Dashboards:5,ECK:2,ECE:2,ESS:0,CloudMig:3,MachineLrn:2,Arch:4,Splunk:0,K8s:4,Docker:4,Kibana:5,Logstash:5,StackMon:4},c:{E:null,A:'Oct 2023',O:'Jun 2022',S:null},cl:'Govt NL (VOG)',tr:'Yes'},
+{r:'EMEA',p:'Devoteam',n:'Kenny Ensink',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:2,MLSearch:1,Analytics:4,AppSearch:1,VectorSearch:0,APM:4,Logs:4,Metrics:3,Endpoint:2,SIEM:2,SecAnal:1,Dashboards:4,ECK:2,ECE:2,ESS:0,CloudMig:1,MachineLrn:1,Arch:3,Splunk:5,K8s:2,Docker:1,Kibana:4,Logstash:3,StackMon:3},c:{E:'Mar 2026',A:'Feb 2026',O:null,S:null},cl:'Govt NL (VOG)',tr:'No'},
+{r:'EMEA',p:'Devoteam',n:'Lennard de Lange',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:3,MLSearch:3,Analytics:4,AppSearch:1,VectorSearch:1,APM:3,Logs:4,Metrics:4,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:2,ECE:2,ESS:0,CloudMig:1,MachineLrn:4,Arch:2,Splunk:1,K8s:2,Docker:1,Kibana:4,Logstash:4,StackMon:3},c:{E:null,A:'Dec 2025',O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Devoteam',n:'Robin Pollard',e:'',loc:'NL/BENELUX/ CET',lg:'English/Dutch',ct:'NL',dl:'Virtual, Onsite',s:{GenAI:0,MLSearch:0,Analytics:0,AppSearch:0,VectorSearch:0,APM:0,Logs:0,Metrics:0,Endpoint:0,SIEM:0,SecAnal:0,Dashboards:0,ECK:0,ECE:0,ESS:0,CloudMig:0,MachineLrn:0,Arch:0,Splunk:0,K8s:0,Docker:0,Kibana:0,Logstash:0,StackMon:0},c:{E:null,A:null,O:null,S:null},cl:null,tr:'No'},
+{r:'EMEA',p:'droxIT GmbH',n:'Markus Baumgaertner',e:'',loc:'Germany/CET/CEST',lg:'German/English',ct:'DACH',dl:'Virtual',s:{GenAI:2,MLSearch:3,Analytics:5,AppSearch:2,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:5,ECK:3,ECE:4,ESS:1,CloudMig:4,MachineLrn:3,Arch:5,Splunk:1,K8s:3,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:'Feb 2022',A:null,O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'droxIT GmbH',n:'Marta Villarroya',e:'',loc:'Germany/CET/CEST',lg:'German/English',ct:'DACH',dl:'Virtual',s:{GenAI:2,MLSearch:3,Analytics:5,AppSearch:2,VectorSearch:3,APM:4,Logs:5,Metrics:5,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:5,ECK:4,ECE:4,ESS:1,CloudMig:3,MachineLrn:3,Arch:5,Splunk:1,K8s:3,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:'Jul 2022',A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'droxIT GmbH',n:'Dr. Oxana Lapteva',e:'',loc:'Germany/CET/CEST',lg:'German/English',ct:'DACH',dl:'Virtual',s:{GenAI:4,MLSearch:5,Analytics:5,AppSearch:2,VectorSearch:5,APM:2,Logs:3,Metrics:3,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:2,ECE:4,ESS:1,CloudMig:2,MachineLrn:5,Arch:4,Splunk:1,K8s:2,Docker:5,Kibana:5,Logstash:4,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Ofir Adi',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:5,MLSearch:5,Analytics:5,AppSearch:0,VectorSearch:5,APM:5,Logs:5,Metrics:5,Endpoint:1,SIEM:5,SecAnal:5,Dashboards:5,ECK:5,ECE:5,ESS:5,CloudMig:5,MachineLrn:5,Arch:5,Splunk:4,K8s:5,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:'V',A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Mendi Greenwald',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:3,MLSearch:3,Analytics:5,AppSearch:0,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:1,SIEM:5,SecAnal:5,Dashboards:5,ECK:5,ECE:1,ESS:0,CloudMig:4,MachineLrn:4,Arch:1,Splunk:4,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Daniel Shwartzman',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:3,MLSearch:3,Analytics:5,AppSearch:0,VectorSearch:4,APM:4,Logs:5,Metrics:5,Endpoint:1,SIEM:5,SecAnal:5,Dashboards:5,ECK:4,ECE:1,ESS:0,CloudMig:4,MachineLrn:4,Arch:4,Splunk:0,K8s:5,Docker:0,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Amit Ishay',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:3,MLSearch:3,Analytics:4,AppSearch:0,VectorSearch:3,APM:4,Logs:3,Metrics:3,Endpoint:1,SIEM:2,SecAnal:2,Dashboards:2,ECK:2,ECE:1,ESS:0,CloudMig:2,MachineLrn:3,Arch:1,Splunk:0,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:2},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Alon Schneider',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:5,MLSearch:5,Analytics:3,AppSearch:0,VectorSearch:5,APM:2,Logs:1,Metrics:1,Endpoint:1,SIEM:2,SecAnal:2,Dashboards:2,ECK:2,ECE:1,ESS:0,CloudMig:2,MachineLrn:1,Arch:0,Splunk:0,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:2},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Lian Fichman',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:5,MLSearch:5,Analytics:3,AppSearch:0,VectorSearch:5,APM:3,Logs:1,Metrics:1,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:1,ECK:2,ECE:1,ESS:0,CloudMig:1,MachineLrn:4,Arch:0,Splunk:0,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:1},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Guy Golpur',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:3,MLSearch:3,Analytics:4,AppSearch:0,VectorSearch:4,APM:5,Logs:5,Metrics:5,Endpoint:1,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:0,CloudMig:3,MachineLrn:4,Arch:0,Splunk:4,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Itamar Kremer',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:5,MLSearch:5,Analytics:5,AppSearch:0,VectorSearch:4,APM:5,Logs:5,Metrics:5,Endpoint:1,SIEM:5,SecAnal:5,Dashboards:5,ECK:5,ECE:1,ESS:0,CloudMig:5,MachineLrn:5,Arch:5,Splunk:4,K8s:5,Docker:0,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Evyatar Revach',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:3,MLSearch:4,Analytics:5,AppSearch:0,VectorSearch:4,APM:4,Logs:5,Metrics:5,Endpoint:1,SIEM:5,SecAnal:5,Dashboards:5,ECK:5,ECE:1,ESS:0,CloudMig:4,MachineLrn:4,Arch:0,Splunk:4,K8s:4,Docker:0,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'David Taback',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:2,MLSearch:1,Analytics:2,AppSearch:0,VectorSearch:2,APM:3,Logs:3,Metrics:3,Endpoint:1,SIEM:3,SecAnal:3,Dashboards:3,ECK:5,ECE:1,ESS:0,CloudMig:4,MachineLrn:3,Arch:0,Splunk:0,K8s:5,Docker:0,Kibana:5,Logstash:5,StackMon:4},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Harel Taligaon',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:5,MLSearch:4,Analytics:4,AppSearch:0,VectorSearch:4,APM:4,Logs:5,Metrics:5,Endpoint:1,SIEM:4,SecAnal:4,Dashboards:4,ECK:4,ECE:1,ESS:0,CloudMig:4,MachineLrn:4,Arch:4,Splunk:0,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Amir Bernshtin',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:4,MLSearch:4,Analytics:3,AppSearch:0,VectorSearch:4,APM:2,Logs:1,Metrics:1,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:1,ECK:1,ECE:1,ESS:0,CloudMig:1,MachineLrn:3,Arch:0,Splunk:0,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Nir Geron',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:4,MLSearch:4,Analytics:4,AppSearch:0,VectorSearch:3,APM:4,Logs:4,Metrics:4,Endpoint:1,SIEM:4,SecAnal:4,Dashboards:4,ECK:1,ECE:1,ESS:0,CloudMig:1,MachineLrn:5,Arch:0,Splunk:4,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'KPMG Israel',n:'Yaron Shmul',e:'',loc:'Israel',lg:'Hebrew/English',ct:'Global',dl:'Remote/Onsite',s:{GenAI:4,MLSearch:4,Analytics:4,AppSearch:0,VectorSearch:4,APM:4,Logs:4,Metrics:4,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:1,ECE:1,ESS:0,CloudMig:1,MachineLrn:3,Arch:0,Splunk:0,K8s:0,Docker:0,Kibana:5,Logstash:5,StackMon:4},c:{E:null,A:null,O:null,S:null},cl:'Local Israel',tr:'Yes'},
+{r:'EMEA',p:'Octodet',n:'Saddam Hocine Hiba',e:'',loc:'Algeria GMT+1',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:3,Analytics:5,AppSearch:1,VectorSearch:3,APM:4,Logs:5,Metrics:5,Endpoint:5,SIEM:5,SecAnal:5,Dashboards:5,ECK:5,ECE:5,ESS:5,CloudMig:5,MachineLrn:5,Arch:5,Splunk:4,K8s:5,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Karim Akrour',e:'',loc:'France GMT+2',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote/Onsite',s:{GenAI:3,MLSearch:2,Analytics:5,AppSearch:1,VectorSearch:2,APM:3,Logs:3,Metrics:3,Endpoint:5,SIEM:5,SecAnal:5,Dashboards:5,ECK:5,ECE:3,ESS:4,CloudMig:4,MachineLrn:4,Arch:5,Splunk:5,K8s:4,Docker:4,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Riad Bensalem',e:'',loc:'Ireland',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote/Onsite',s:{GenAI:3,MLSearch:2,Analytics:5,AppSearch:1,VectorSearch:2,APM:4,Logs:5,Metrics:5,Endpoint:5,SIEM:5,SecAnal:5,Dashboards:5,ECK:5,ECE:5,ESS:5,CloudMig:5,MachineLrn:5,Arch:5,Splunk:3,K8s:4,Docker:4,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:'May 2022',S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Zakaria Madi',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:5,AppSearch:1,VectorSearch:2,APM:4,Logs:5,Metrics:5,Endpoint:5,SIEM:5,SecAnal:5,Dashboards:5,ECK:5,ECE:5,ESS:5,CloudMig:5,MachineLrn:5,Arch:5,Splunk:4,K8s:5,Docker:3,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Ilhem Tahiri',e:'',loc:'France',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:5,AppSearch:1,VectorSearch:2,APM:4,Logs:5,Metrics:4,Endpoint:5,SIEM:5,SecAnal:5,Dashboards:5,ECK:3,ECE:1,ESS:3,CloudMig:2,MachineLrn:4,Arch:4,Splunk:2,K8s:2,Docker:3,Kibana:5,Logstash:4,StackMon:4},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Mohamed Yacine',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:4,Logs:4,Metrics:4,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:4,ECE:3,ESS:4,CloudMig:4,MachineLrn:4,Arch:4,Splunk:2,K8s:4,Docker:4,Kibana:5,Logstash:4,StackMon:4},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Abderrahmane Mokdad',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:3,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:2,Docker:3,Kibana:5,Logstash:3,StackMon:3},c:{E:'Cert. Incident Resp.',A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Nihal Taguerci',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:3,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:2,Docker:3,Kibana:5,Logstash:3,StackMon:3},c:{E:'Cert. Incident Resp.',A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Meriem Mennadi',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:3,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:2,Docker:3,Kibana:5,Logstash:3,StackMon:3},c:{E:'Cert. Incident Resp.',A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Mohamed Hamza Doudou',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:3,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:2,Docker:3,Kibana:5,Logstash:3,StackMon:3},c:{E:'Cert. Incident Resp.',A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Merouan Heraoua',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:3,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:2,Docker:3,Kibana:5,Logstash:3,StackMon:3},c:{E:'Cert. Incident Resp.',A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Kader Djabri',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:3,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:2,Docker:3,Kibana:5,Logstash:3,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Abderrahman Aksoum',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:3,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:2,Docker:3,Kibana:5,Logstash:3,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Ibtihel Sansri',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:2,ECE:1,ESS:3,CloudMig:2,MachineLrn:3,Arch:3,Splunk:3,K8s:2,Docker:3,Kibana:5,Logstash:3,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Taha Ammar Loucif',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:4,ECE:1,ESS:3,CloudMig:4,MachineLrn:2,Arch:3,Splunk:2,K8s:4,Docker:4,Kibana:5,Logstash:4,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Mohamed Adda Meftouh',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:4,ECE:1,ESS:3,CloudMig:4,MachineLrn:2,Arch:3,Splunk:2,K8s:4,Docker:4,Kibana:5,Logstash:4,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Alaeddine Khadraoui',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:4,ECE:1,ESS:3,CloudMig:4,MachineLrn:2,Arch:3,Splunk:2,K8s:5,Docker:5,Kibana:5,Logstash:4,StackMon:5},c:{E:null,A:'K8s Admin Dec 2025',O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Octodet',n:'Mounir Abbas',e:'',loc:'Algeria',lg:'English/French/Arabic',ct:'EMEA',dl:'Remote',s:{GenAI:3,MLSearch:2,Analytics:4,AppSearch:1,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:4,ECE:1,ESS:3,CloudMig:4,MachineLrn:2,Arch:3,Splunk:2,K8s:5,Docker:5,Kibana:5,Logstash:4,StackMon:5},c:{E:null,A:'AWS Arch Aug 2021',O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Perform IT',n:'Damjan Kumin',e:'',loc:'Slovenia GMT+2',lg:'English/Slovenian/Croatian',ct:'EMEA, ME',dl:'Virtual',s:{GenAI:3,MLSearch:4,Analytics:4,AppSearch:3,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:4,SIEM:4,SecAnal:3,Dashboards:3,ECK:3,ECE:3,ESS:3,CloudMig:3,MachineLrn:4,Arch:5,Splunk:3,K8s:4,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'n/a',tr:'Yes'},
+{r:'EMEA',p:'Perform IT',n:'Ghassen Marghoub',e:'',loc:'Tunisia GMT+1',lg:'English/French/Arabic',ct:'EMEA, ME',dl:'Virtual/Onsite VISA',s:{GenAI:1,MLSearch:2,Analytics:5,AppSearch:2,VectorSearch:1,APM:2,Logs:5,Metrics:3,Endpoint:3,SIEM:3,SecAnal:2,Dashboards:4,ECK:1,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:4,Splunk:1,K8s:2,Docker:1,Kibana:5,Logstash:5,StackMon:5},c:{E:'Oct 2028',A:null,O:'in progress',S:null},cl:'n/a',tr:'No'},
+{r:'EMEA',p:'Perform IT',n:'Pratik Upadhyay',e:'',loc:'India GMT+5:30',lg:'English/Hindi/Marathi',ct:'EMEA, ME',dl:'Virtual/Onsite VISA',s:{GenAI:1,MLSearch:1,Analytics:3,AppSearch:1,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:3,ECK:1,ECE:1,ESS:1,CloudMig:1,MachineLrn:1,Arch:1,Splunk:1,K8s:3,Docker:2,Kibana:3,Logstash:3,StackMon:3},c:{E:'Nov 2027',A:null,O:'in progress',S:null},cl:null,tr:null},
+{r:'EMEA',p:'Perform IT',n:'Primoz Rajbar',e:'',loc:'Slovenia GMT+2',lg:'English/Slovenian/German',ct:'EMEA, ME',dl:'Virtual/Onsite',s:{GenAI:1,MLSearch:1,Analytics:3,AppSearch:1,VectorSearch:1,APM:3,Logs:3,Metrics:3,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:3,ECK:3,ECE:3,ESS:3,CloudMig:1,MachineLrn:2,Arch:3,Splunk:1,K8s:3,Docker:3,Kibana:3,Logstash:3,StackMon:3},c:{E:'Nov 2027',A:null,O:'in progress',S:null},cl:null,tr:null},
+{r:'EMEA',p:'Perform IT',n:'Pooja Teje',e:'',loc:'Ireland GMT+1',lg:'English/Hindi/Marathi',ct:'EMEA, ME',dl:'Virtual/Onsite',s:{GenAI:2,MLSearch:3,Analytics:3,AppSearch:3,VectorSearch:3,APM:3,Logs:3,Metrics:3,Endpoint:3,SIEM:3,SecAnal:3,Dashboards:3,ECK:2,ECE:2,ESS:2,CloudMig:2,MachineLrn:2,Arch:3,Splunk:3,K8s:4,Docker:4,Kibana:4,Logstash:3,StackMon:3},c:{E:'Oct 2027',A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'Perform IT',n:'Stanislav Ivanov',e:'',loc:'Bulgaria GMT+3',lg:'English/Bulgarian',ct:'EMEA, ME',dl:'Virtual',s:{GenAI:3,MLSearch:3,Analytics:4,AppSearch:3,VectorSearch:3,APM:3,Logs:5,Metrics:3,Endpoint:3,SIEM:3,SecAnal:3,Dashboards:4,ECK:3,ECE:3,ESS:3,CloudMig:2,MachineLrn:3,Arch:4,Splunk:4,K8s:4,Docker:4,Kibana:4,Logstash:4,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'RADes',n:'Luc PONCET',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:2,MLSearch:1,Analytics:5,AppSearch:1,VectorSearch:1,APM:3,Logs:5,Metrics:5,Endpoint:1,SIEM:2,SecAnal:2,Dashboards:5,ECK:2,ECE:1,ESS:1,CloudMig:2,MachineLrn:3,Arch:4,Splunk:2,K8s:2,Docker:2,Kibana:4,Logstash:5,StackMon:4},c:{E:'Feb 2022',A:null,O:'Feb 2024',S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Valentin COSTET',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:2,MLSearch:1,Analytics:5,AppSearch:1,VectorSearch:1,APM:3,Logs:5,Metrics:3,Endpoint:1,SIEM:2,SecAnal:2,Dashboards:5,ECK:2,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:4,Splunk:1,K8s:3,Docker:3,Kibana:4,Logstash:5,StackMon:4},c:{E:'Mar 2023',A:null,O:'Mar 2025',S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Philippe EL ASSAD',e:'',loc:'France',lg:'French',ct:'France',dl:'Onsite',s:{GenAI:2,MLSearch:1,Analytics:5,AppSearch:1,VectorSearch:2,APM:3,Logs:5,Metrics:3,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:1,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:4,Splunk:4,K8s:3,Docker:3,Kibana:4,Logstash:5,StackMon:4},c:{E:'May 2022',A:null,O:'May 2024',S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Brian MARTIN',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:5,AppSearch:1,VectorSearch:1,APM:3,Logs:5,Metrics:3,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:2,ECE:1,ESS:1,CloudMig:1,MachineLrn:3,Arch:3,Splunk:1,K8s:2,Docker:2,Kibana:3,Logstash:3,StackMon:4},c:{E:'May 2022',A:null,O:'May 2024',S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Yawo ADUFU',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:4,AppSearch:1,VectorSearch:1,APM:2,Logs:5,Metrics:3,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:3,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:2,Splunk:1,K8s:3,Docker:3,Kibana:4,Logstash:4,StackMon:4},c:{E:'Nov 2024',A:null,O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Mathias BAZIN',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:5,AppSearch:1,VectorSearch:1,APM:3,Logs:5,Metrics:3,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:4,ECE:1,ESS:1,CloudMig:1,MachineLrn:3,Arch:3,Splunk:1,K8s:3,Docker:3,Kibana:4,Logstash:4,StackMon:4},c:{E:'May 2022',A:null,O:'May 2024',S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Selma REBBANI',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:4,AppSearch:1,VectorSearch:1,APM:2,Logs:5,Metrics:3,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:2,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:2,Splunk:1,K8s:2,Docker:2,Kibana:2,Logstash:3,StackMon:3},c:{E:'Dec 2024',A:null,O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Oussama ABID',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:4,AppSearch:1,VectorSearch:1,APM:2,Logs:5,Metrics:5,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:1,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:2,Splunk:1,K8s:1,Docker:1,Kibana:3,Logstash:4,StackMon:3},c:{E:'Dec 2024',A:null,O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Elias LORIMY',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:4,AppSearch:1,VectorSearch:1,APM:2,Logs:5,Metrics:5,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:1,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:2,Splunk:1,K8s:1,Docker:1,Kibana:3,Logstash:4,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'RADes',n:'Nils KARLSSON',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:4,AppSearch:1,VectorSearch:1,APM:2,Logs:5,Metrics:5,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:1,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:2,Splunk:1,K8s:1,Docker:1,Kibana:3,Logstash:4,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:null,tr:null},
+{r:'EMEA',p:'RADes',n:'Amani LAKEHILI',e:'',loc:'France',lg:'French',ct:'France',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:4,AppSearch:1,VectorSearch:1,APM:2,Logs:5,Metrics:3,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:5,ECK:2,ECE:1,ESS:1,CloudMig:1,MachineLrn:2,Arch:2,Splunk:1,K8s:2,Docker:2,Kibana:2,Logstash:3,StackMon:3},c:{E:null,A:null,O:null,S:null},cl:null,tr:'Yes'},
+{r:'EMEA',p:'Malcrove',n:'Vladimir Davydov',e:'',loc:'UAE UTC+4',lg:'English',ct:'No restrictions',dl:'No preference',s:{GenAI:4,MLSearch:5,Analytics:4,AppSearch:5,VectorSearch:4,APM:4,Logs:5,Metrics:5,Endpoint:5,SIEM:5,SecAnal:5,Dashboards:5,ECK:4,ECE:5,ESS:4,CloudMig:4,MachineLrn:5,Arch:5,Splunk:3,K8s:4,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:'In progress',A:'In progress',O:null,S:'In progress'},cl:'UAE clearance',tr:'Yes'},
+{r:'EMEA',p:'Malcrove',n:'Faisal Umer',e:'',loc:'UAE UTC+4',lg:'English',ct:'All ex-Israel',dl:'No preference',s:{GenAI:4,MLSearch:4,Analytics:3,AppSearch:3,VectorSearch:3,APM:4,Logs:4,Metrics:4,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:5,ECE:5,ESS:2,CloudMig:5,MachineLrn:5,Arch:3,Splunk:3,K8s:4,Docker:5,Kibana:4,Logstash:5,StackMon:5},c:{E:'In progress',A:'In progress',O:null,S:'In progress'},cl:null,tr:'Yes'},
+{r:'EMEA',p:'Malcrove',n:'Zahid Rehman',e:'',loc:'UAE UTC+4',lg:'English',ct:'All ex-Israel',dl:'No preference',s:{GenAI:3,MLSearch:4,Analytics:3,AppSearch:3,VectorSearch:3,APM:4,Logs:4,Metrics:4,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:5,ECE:4,ESS:2,CloudMig:5,MachineLrn:5,Arch:3,Splunk:3,K8s:4,Docker:5,Kibana:4,Logstash:5,StackMon:5},c:{E:'In progress',A:null,O:'In progress',S:'In progress'},cl:'UAE clearance',tr:null},
+{r:'EMEA',p:'Malcrove',n:'Jaryd Brits',e:'',loc:'UAE UTC+4',lg:'English',ct:'No restrictions',dl:'No preference',s:{GenAI:3,MLSearch:2,Analytics:3,AppSearch:3,VectorSearch:2,APM:5,Logs:4,Metrics:4,Endpoint:3,SIEM:3,SecAnal:3,Dashboards:4,ECK:3,ECE:3,ESS:1,CloudMig:4,MachineLrn:4,Arch:4,Splunk:2,K8s:3,Docker:5,Kibana:4,Logstash:4,StackMon:4},c:{E:'In progress',A:null,O:'In progress',S:null},cl:'UAE clearance',tr:'Yes'},
+{r:'EMEA',p:'Malcrove',n:'Shreyash Bedre',e:'',loc:'UAE UTC+4',lg:'English/Hindi/Marathi',ct:'No restrictions',dl:'No preference',s:{GenAI:3,MLSearch:3,Analytics:4,AppSearch:2,VectorSearch:3,APM:4,Logs:4,Metrics:4,Endpoint:3,SIEM:3,SecAnal:3,Dashboards:4,ECK:1,ECE:4,ESS:2,CloudMig:4,MachineLrn:3,Arch:4,Splunk:1,K8s:2,Docker:3,Kibana:5,Logstash:5,StackMon:5},c:{E:'In progress',A:null,O:null,S:'In progress'},cl:null,tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Pierre-David HOUILLE',e:'',loc:'Europe GMT+1',lg:'English/French',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:5,MLSearch:5,Analytics:5,AppSearch:4,VectorSearch:4,APM:5,Logs:5,Metrics:5,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:5,ECE:4,ESS:5,CloudMig:4,MachineLrn:5,Arch:5,Splunk:2,K8s:5,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Salim Chalhal',e:'',loc:'Europe GMT+1',lg:'English/French',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:5,MLSearch:5,Analytics:5,AppSearch:4,VectorSearch:4,APM:5,Logs:5,Metrics:5,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:5,ECE:3,ESS:4,CloudMig:3,MachineLrn:5,Arch:5,Splunk:2,K8s:5,Docker:5,Kibana:4,Logstash:4,StackMon:5},c:{E:null,A:null,O:'Jan 2026',S:'Oct 2025'},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Gilbert Alves',e:'',loc:'Europe GMT+1',lg:'English/French',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:0,MLSearch:0,Analytics:0,AppSearch:0,VectorSearch:0,APM:0,Logs:0,Metrics:0,Endpoint:0,SIEM:0,SecAnal:0,Dashboards:0,ECK:0,ECE:0,ESS:0,CloudMig:0,MachineLrn:0,Arch:0,Splunk:0,K8s:0,Docker:0,Kibana:0,Logstash:0,StackMon:0},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Djamel Chatti',e:'',loc:'Europe GMT+1',lg:'English/French',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:4,MLSearch:5,Analytics:5,AppSearch:4,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:4,SIEM:4,SecAnal:5,Dashboards:5,ECK:5,ECE:5,ESS:5,CloudMig:5,MachineLrn:5,Arch:5,Splunk:1,K8s:5,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Badre Moudden',e:'',loc:'Europe GMT+1',lg:'French/English',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:3,MLSearch:4,Analytics:5,AppSearch:4,VectorSearch:2,APM:5,Logs:5,Metrics:5,Endpoint:4,SIEM:5,SecAnal:3,Dashboards:5,ECK:5,ECE:5,ESS:4,CloudMig:4,MachineLrn:4,Arch:5,Splunk:2,K8s:4,Docker:4,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Pierre Louis CHARLEMAGNE',e:'',loc:'Europe GMT+1',lg:'French/English',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:3,MLSearch:3,Analytics:4,AppSearch:4,VectorSearch:2,APM:4,Logs:5,Metrics:5,Endpoint:4,SIEM:5,SecAnal:4,Dashboards:5,ECK:4,ECE:5,ESS:4,CloudMig:4,MachineLrn:5,Arch:4,Splunk:2,K8s:5,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Rafik Kaci Mahamad',e:'',loc:'Europe GMT+1',lg:'French/English',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:0,MLSearch:0,Analytics:0,AppSearch:0,VectorSearch:0,APM:0,Logs:0,Metrics:0,Endpoint:0,SIEM:0,SecAnal:0,Dashboards:0,ECK:0,ECE:0,ESS:0,CloudMig:0,MachineLrn:0,Arch:0,Splunk:0,K8s:0,Docker:0,Kibana:0,Logstash:0,StackMon:0},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Hanna CHEBBI',e:'',loc:'Europe GMT+1',lg:'French/English',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:4,MLSearch:4,Analytics:5,AppSearch:4,VectorSearch:4,APM:3,Logs:5,Metrics:5,Endpoint:4,SIEM:3,SecAnal:3,Dashboards:5,ECK:3,ECE:3,ESS:3,CloudMig:3,MachineLrn:4,Arch:4,Splunk:1,K8s:2,Docker:2,Kibana:5,Logstash:5,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'Imad BOUZGOU',e:'',loc:'Europe GMT+1',lg:'French/English',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:3,MLSearch:3,Analytics:5,AppSearch:4,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:3,ECE:4,ESS:4,CloudMig:4,MachineLrn:4,Arch:4,Splunk:5,K8s:4,Docker:4,Kibana:5,Logstash:5,StackMon:5},c:{E:'Aug 2025',A:'Nov 2021',O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'Peritis',n:'El Houssain Allami',e:'',loc:'Europe GMT+1',lg:'French/English',ct:'Europe',dl:'Virtual and Onsite',s:{GenAI:0,MLSearch:0,Analytics:0,AppSearch:0,VectorSearch:0,APM:0,Logs:0,Metrics:0,Endpoint:0,SIEM:0,SecAnal:0,Dashboards:0,ECK:0,ECE:0,ESS:0,CloudMig:0,MachineLrn:0,Arch:0,Splunk:0,K8s:0,Docker:0,Kibana:0,Logstash:0,StackMon:0},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:null},
+{r:'APAC',p:'Skillfield',n:'Lakshmi Srinivas Bodepu',e:'',loc:'Australia AEST',lg:'English',ct:'Australia',dl:'Virtual',s:{GenAI:4,MLSearch:3,Analytics:4,AppSearch:3,VectorSearch:3,APM:3,Logs:5,Metrics:5,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:4,ECE:4,ESS:5,CloudMig:4,MachineLrn:4,Arch:4,Splunk:2,K8s:4,Docker:4,Kibana:4,Logstash:4,StackMon:4},c:{E:'Aug 2021',A:'Nov 2021',O:'Nov 2021',S:null},cl:null,tr:'Yes'},
+{r:'APAC',p:'Skillfield',n:'Saad Abbasi',e:'',loc:'Australia AEST',lg:'English',ct:'Australia',dl:'Virtual',s:{GenAI:4,MLSearch:3,Analytics:4,AppSearch:2,VectorSearch:3,APM:2,Logs:5,Metrics:5,Endpoint:2,SIEM:4,SecAnal:4,Dashboards:5,ECK:4,ECE:2,ESS:5,CloudMig:3,MachineLrn:4,Arch:4,Splunk:4,K8s:3,Docker:3,Kibana:4,Logstash:4,StackMon:4},c:{E:'Apr 2020',A:'Jul 2021',O:'Dec 2021',S:null},cl:null,tr:'No'},
+{r:'EMEA',p:'Sidecar',n:'Flavio Percoco',e:'',loc:'Switzerland/CET',lg:'English/Spanish/Italian',ct:'EU',dl:'Virtual',s:{GenAI:4,MLSearch:4,Analytics:4,AppSearch:4,VectorSearch:4,APM:4,Logs:4,Metrics:4,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:4,ECK:4,ECE:4,ESS:4,CloudMig:4,MachineLrn:4,Arch:4,Splunk:4,K8s:4,Docker:4,Kibana:4,Logstash:4,StackMon:4},c:{E:'N/A',A:'N/A',O:'N/A',S:'N/A'},cl:'N/A',tr:'Yes'},
+{r:'EMEA',p:'Sidecar',n:'Honza Kral',e:'',loc:'Switzerland/CET',lg:'English/Czech',ct:'EU',dl:'Onsite',s:{GenAI:5,MLSearch:5,Analytics:5,AppSearch:4,VectorSearch:5,APM:5,Logs:5,Metrics:5,Endpoint:2,SIEM:3,SecAnal:3,Dashboards:5,ECK:4,ECE:4,ESS:4,CloudMig:5,MachineLrn:3,Arch:5,Splunk:2,K8s:4,Docker:5,Kibana:4,Logstash:5,StackMon:5},c:{E:'2018',A:null,O:null,S:null},cl:'No',tr:'Yes'},
+{r:'EMEA',p:'Sidecar',n:'Karel Minar',e:'',loc:'Switzerland/CET',lg:'English/Czech',ct:'Czechia',dl:'Virtual',s:{GenAI:4,MLSearch:4,Analytics:4,AppSearch:4,VectorSearch:4,APM:4,Logs:4,Metrics:4,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:2,ECK:2,ECE:2,ESS:2,CloudMig:2,MachineLrn:3,Arch:4,Splunk:1,K8s:1,Docker:3,Kibana:3,Logstash:3,StackMon:3},c:{E:'N/A',A:'N/A',O:'N/A',S:'N/A'},cl:null,tr:null},
+{r:'EMEA',p:'Sidecar',n:'Kieran Hall',e:'',loc:'Switzerland/CET',lg:'English',ct:'NL/UK/DE',dl:'Virtual',s:{GenAI:4,MLSearch:3,Analytics:4,AppSearch:4,VectorSearch:3,APM:4,Logs:5,Metrics:4,Endpoint:4,SIEM:4,SecAnal:4,Dashboards:5,ECK:3,ECE:3,ESS:2,CloudMig:2,MachineLrn:3,Arch:5,Splunk:3,K8s:4,Docker:5,Kibana:5,Logstash:5,StackMon:5},c:{E:'N/A',A:'N/A',O:'N/A',S:'N/A'},cl:'No',tr:'No'},
+{r:'EMEA',p:'Sidecar',n:'Bojan Jovanovic',e:'',loc:'Switzerland/CET',lg:'English/Serbian',ct:'EU',dl:'Onsite',s:{GenAI:3,MLSearch:2,Analytics:3,AppSearch:3,VectorSearch:2,APM:4,Logs:4,Metrics:4,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:2,ECK:3,ECE:3,ESS:3,CloudMig:3,MachineLrn:3,Arch:4,Splunk:1,K8s:5,Docker:5,Kibana:3,Logstash:4,StackMon:4},c:{E:'N/A',A:'N/A',O:'N/A',S:'N/A'},cl:'No',tr:'No'},
+{r:'EMEA',p:'Sidecar',n:'Dan Palmer-Bancel',e:'',loc:'Amsterdam/CET',lg:'English/Danish',ct:'EMEA/AMER',dl:'Virtual',s:{GenAI:3,MLSearch:3,Analytics:3,AppSearch:3,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:2,SIEM:2,SecAnal:2,Dashboards:5,ECK:5,ECE:5,ESS:5,CloudMig:5,MachineLrn:5,Arch:5,Splunk:3,K8s:5,Docker:5,Kibana:3,Logstash:5,StackMon:5},c:{E:'Jul 2019',A:'Feb 2021',O:'Mar 2021',S:null},cl:'No',tr:'Yes'},
+{r:'EMEA',p:'SVA',n:'Nico Revermann',e:'',loc:'Germany/CEST',lg:'German',ct:'DACH',dl:'Virtual',s:{GenAI:3,MLSearch:3,Analytics:3,AppSearch:3,VectorSearch:3,APM:5,Logs:5,Metrics:5,Endpoint:1,SIEM:1,SecAnal:1,Dashboards:4,ECK:3,ECE:4,ESS:4,CloudMig:3,MachineLrn:3,Arch:4,Splunk:2,K8s:3,Docker:3,Kibana:4,Logstash:4,StackMon:4},c:{E:'Jun 2025',A:'Jul 2025',O:null,S:null},cl:'No',tr:'Yes'},
+{r:'EMEA',p:'SVA',n:'Giuseppe Gallucci',e:'',loc:'Germany/CEST',lg:'German',ct:'DACH',dl:'Virtual',s:{GenAI:1,MLSearch:3,Analytics:2,AppSearch:3,VectorSearch:2,APM:2,Logs:3,Metrics:3,Endpoint:1,SIEM:3,SecAnal:3,Dashboards:4,ECK:3,ECE:5,ESS:3,CloudMig:1,MachineLrn:1,Arch:4,Splunk:1,K8s:4,Docker:4,Kibana:4,Logstash:4,StackMon:5},c:{E:null,A:null,O:null,S:null},cl:'Yes',tr:'Yes'},
+{r:'EMEA',p:'SVA',n:'Maximilian Lenz',e:'',loc:'Germany/CEST',lg:'German',ct:'DACH',dl:'Virtual',s:{GenAI:1,MLSearch:1,Analytics:1,AppSearch:1,VectorSearch:1,APM:2,Logs:4,Metrics:4,Endpoint:2,SIEM:3,SecAnal:3,Dashboards:4,ECK:3,ECE:2,ESS:2,CloudMig:1,MachineLrn:3,Arch:3,Splunk:1,K8s:3,Docker:3,Kibana:4,Logstash:3,StackMon:4},c:{E:'Aug 2021',A:'Jun 2023',O:'Feb 2025',S:null},cl:'No',tr:'Yes'},
+]
+const REGS=[...new Set(D.map(x=>x.r))];
+const LOCS=[...new Set(D.map(x=>x.loc).filter(Boolean))].sort();
+const CTRS=[...new Set(D.map(x=>x.ct).filter(Boolean))].sort();
+const LANGS=[...new Set(D.flatMap(x=>x.lg.split('/').map(l=>l.trim())).filter(Boolean))].sort();
+const PR={};PARS.forEach(p=>{PR[p]=[...new Set(D.filter(x=>x.p===p).map(x=>x.r))].join(', ')});
+
+// Demand store
+const DS={};
+PARS.forEach(p=>{DS[p]={};MONTHS.forEach(m=>{DS[p][m]={d:'',o:''}})});
+
+// Multi-select state
+const SS={rr:new Set(),rp:new Set(),rm:new Set(),rl:new Set(),rc:new Set(),rg:new Set(),rs:new Set(),cs:new Set()};
+
+function hC(c){return c&&c!=='No'&&!String(c).toLowerCase().includes('expired')&&c!==''&&c!==null}
+function iE(c){return c&&String(c).toLowerCase().includes('expired')}
+function sc(v){if(v>=5)return's5';if(v>=4)return's4';if(v>=3)return's3';if(v>=2)return's2';if(v>=1)return's1';return's0';}
+
+// ══════════════════════════════════════════════════════
+// MULTI-SELECT ENGINE
+// ══════════════════════════════════════════════════════
+function buildMD(ddId,vals,ssKey,fn){
+  const dd=document.getElementById(ddId);dd.innerHTML='';
+  vals.forEach(v=>{
+    const dv=document.createElement('div');dv.className='mopt';
+    const cb=document.createElement('input');cb.type='checkbox';cb.value=v;cb.checked=SS[ssKey].has(v);
+    cb.onchange=()=>{cb.checked?SS[ssKey].add(v):SS[ssKey].delete(v);updBtn(ddId.replace('md-','mp-'),ssKey);fn()};
+    dv.appendChild(cb);dv.appendChild(document.createTextNode(v));dd.appendChild(dv);
+  });
+}
+function updBtn(mpId,ssKey){
+  const btn=document.querySelector('#'+mpId+' .mpb');if(!btn)return;
+  const s=SS[ssKey];
+  const lbl={rr:'regions',rp:'partners',rm:'scores',rl:'locations',rc:'countries',rg:'languages',rs:'skills',cs:'skills'};
+  btn.innerHTML=s.size?`${s.size} ${lbl[ssKey]||'selected'} ▾`:btn.innerHTML.replace(/^\d.*/,`All ${lbl[ssKey]||''} ▾`);
+  if(!s.size){const def={rr:'All regions',rp:'All partners',rm:'Any score',rl:'All locations',rc:'All countries',rg:'All languages',rs:'Choose skills',cs:'+ Add skills'};btn.innerHTML=(def[ssKey]||'Select')+'  ▾';}
+}
+function tg(cid,e){e.stopPropagation();document.querySelector('#'+cid+' .mdd').classList.toggle('open')}
+document.addEventListener('click',()=>document.querySelectorAll('.mdd.open').forEach(d=>d.classList.remove('open')));
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+function init(){
+  buildMD('md-rr',REGS,'rr',dRs);
+  buildMD('md-rp',PARS,'rp',dRs);
+  buildMD('md-rm',['≥1 Any','≥2 Familiar','≥3 Comfortable','≥4 Strong','5 Expert only'],'rm',dRs);
+  buildMD('md-rl',LOCS,'rl',dRs);
+  buildMD('md-rc',CTRS,'rc',dRs);
+  buildMD('md-rg',LANGS,'rg',dRs);
+  buildMD('md-rs',SK.map(s=>SL[s]),'rs',dRs);
+  buildMD('md-cs',SK.map(s=>SL[s]),'cs',dCi);
+  // skill select for CI
+  const ciSk=document.getElementById('ci-sk');
+  SK.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=SL[s];ciSk.appendChild(o)});
+  // partner/region selects for partner tab
+  const ptr=document.getElementById('pt-r'),ptp=document.getElementById('pt-p');
+  REGS.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;ptr.appendChild(o)});
+  PARS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;ptp.appendChild(o)});
+}
+
+// ══════════════════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════════════════
+function dOv(){
+  const bR={},bP={};D.forEach(x=>{bR[x.r]=(bR[x.r]||0)+1;bP[x.p]=(bP[x.p]||0)+1});
+  const CT=['E','A','O','S'],tc=D.reduce((s,r)=>s+CT.filter(t=>hC(r.c[t])).length,0);
+  const cl=D.filter(r=>r.cl&&r.cl!='No'&&r.cl!='n/a'&&r.cl).length;
+  document.getElementById('ov-k').innerHTML=`
+    <div class="kc"><div class="kl">Total resources</div><div class="kv">${D.length}</div></div>
+    <div class="kc"><div class="kl">Partner firms</div><div class="kv">${PARS.length}</div></div>
+    <div class="kc"><div class="kl">Regions</div><div class="kv">${REGS.length}</div></div>
+    <div class="kc"><div class="kl">Active certs</div><div class="kv">${tc}</div></div>
+    <div class="kc"><div class="kl">Cleared</div><div class="kv">${cl}</div></div>
+    <div class="kc"><div class="kl">Trainers</div><div class="kv">${D.filter(r=>r.tr==='Yes'||r.tr==='yes').length}</div></div>`;
+  setTimeout(()=>{
+    new Chart(document.getElementById('cRg'),{type:'doughnut',data:{labels:Object.keys(bR),datasets:[{data:Object.values(bR),backgroundColor:CS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:9},boxWidth:9}}}}});
+    new Chart(document.getElementById('cPr'),{type:'bar',data:{labels:Object.keys(bP),datasets:[{data:Object.values(bP),backgroundColor:CS,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:8},maxRotation:40}},y:{beginAtZero:true}}}});
+    const gp={Search:['GenAI','MLSearch','AppSearch','VectorSearch'],Observability:['APM','Logs','Metrics','Dashboards'],Security:['Endpoint','SIEM','SecAnal'],General:['CloudMig','MachineLrn','Arch'],Infra:['ECK','ECE','ESS','K8s','Docker']};
+    const av={};const n=D.length;
+    Object.entries(gp).forEach(([a,ks])=>{let s=0;D.forEach(r=>ks.forEach(k=>s+=(r.s[k]||0)));av[a]=parseFloat((s/(n*ks.length)).toFixed(1))});
+    new Chart(document.getElementById('cRa'),{type:'radar',data:{labels:Object.keys(av),datasets:[{data:Object.values(av),backgroundColor:'rgba(0,119,204,.15)',borderColor:'#0077CC',borderWidth:2,pointBackgroundColor:'#0077CC',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}}}},plugins:{legend:{display:false}}}});
+    const certCounts={Engineer:0,Analyst:0,Observability:0,Security:0};
+    D.forEach(r=>{if(hC(r.c.E))certCounts.Engineer++;if(hC(r.c.A))certCounts.Analyst++;if(hC(r.c.O))certCounts.Observability++;if(hC(r.c.S))certCounts.Security++});
+    new Chart(document.getElementById('cCo'),{type:'bar',data:{labels:Object.keys(certCounts),datasets:[{data:Object.values(certCounts),backgroundColor:['#0077CC','#00BFB3','#F04E98','#FEC514'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+  },100);
+}
+
+// ══════════════════════════════════════════════════════
+// PARTNER TAB
+// ══════════════════════════════════════════════════════
+function dPt(){
+  const rv=document.getElementById('pt-r').value,pv=document.getElementById('pt-p').value;
+  const pars=pv?[pv]:PARS.filter(p=>!rv||PR[p].includes(rv));
+  let h='<div class="dg"><table><thead><tr><th>Partner</th><th>Region</th><th>Res.</th><th>Row</th>';
+  MONTHS.forEach(m=>h+=`<th class="mth">${m}</th>`);
+  h+='<th>Total Dem.</th><th>Total Off.</th><th>Variance</th></tr></thead><tbody>';
+  pars.forEach(p=>{
+    const cnt=D.filter(x=>x.p===p).length,reg=PR[p];
+    // demand row
+    h+=`<tr><td rowspan="3" style="font-weight:600;vertical-align:middle;white-space:nowrap">${p}</td><td rowspan="3" style="font-size:10px;color:var(--t3);white-space:nowrap">${reg}</td><td rowspan="3" style="text-align:center;font-weight:700">${cnt}</td><td style="font-size:10px;font-weight:600;color:var(--am);white-space:nowrap">Demand</td>`;
+    MONTHS.forEach(m=>h+=`<td class="dm"><input class="dinp" type="number" min="0" value="${DS[p][m].d}" onchange="upD('${p}','${m}','d',this.value)"></td>`);
+    const td=MONTHS.reduce((s,m)=>s+(parseInt(DS[p][m].d)||0),0);
+    h+=`<td class="dm" style="font-weight:700">${td||'—'}</td><td></td><td></td></tr>`;
+    // offered row
+    h+=`<tr><td style="font-size:10px;font-weight:600;color:var(--gn);white-space:nowrap">Offered</td>`;
+    MONTHS.forEach(m=>h+=`<td class="of"><input class="dinp" type="number" min="0" value="${DS[p][m].o}" onchange="upD('${p}','${m}','o',this.value)"></td>`);
+    const to=MONTHS.reduce((s,m)=>s+(parseInt(DS[p][m].o)||0),0);
+    h+=`<td></td><td class="of" style="font-weight:700">${to||'—'}</td><td></td></tr>`;
+    // variance row
+    h+=`<tr><td style="font-size:10px;font-weight:600;color:var(--bl);white-space:nowrap">Variance</td>`;
+    MONTHS.forEach(m=>{
+      const d=parseInt(DS[p][m].d)||0,o=parseInt(DS[p][m].o)||0,v=o-d;
+      const cls=d===0&&o===0?'vz':v>=0?'vp':'vn';
+      h+=`<td id="v_${p.replace(/[^a-z0-9]/gi,'_')}_${m}" class="${cls}">${d===0&&o===0?'—':(v>0?'+':'')+v}</td>`;
+    });
+    const tv=MONTHS.reduce((s,m)=>s+(parseInt(DS[p][m].o)||0)-(parseInt(DS[p][m].d)||0),0);
+    const td2=MONTHS.reduce((s,m)=>s+(parseInt(DS[p][m].d)||0),0),to2=MONTHS.reduce((s,m)=>s+(parseInt(DS[p][m].o)||0),0);
+    const vc=td2===0&&to2===0?'vz':tv>=0?'vp':'vn';
+    h+=`<td></td><td></td><td class="${vc}" style="font-weight:700">${td2===0&&to2===0?'—':(tv>0?'+':'')+tv}</td></tr>`;
+  });
+  h+='</tbody></table></div>';
+  document.getElementById('pt-tbl').innerHTML=h;
+}
+function upD(p,m,f,v){
+  DS[p][m][f]=v;
+  const d=parseInt(DS[p][m].d)||0,o=parseInt(DS[p][m].o)||0,vv=o-d;
+  const id=`v_${p.replace(/[^a-z0-9]/gi,'_')}_${m}`;
+  const el=document.getElementById(id);
+  if(el){el.textContent=d===0&&o===0?'—':(vv>0?'+':'')+vv;el.className=d===0&&o===0?'vz':vv>=0?'vp':'vn';}
+}
+
+// ══════════════════════════════════════════════════════
+// RESOURCES & SKILLS — multi-select filters
+// ══════════════════════════════════════════════════════
+function dRs(){
+  // parse score filter
+  const scoreMap={'≥1 Any':1,'≥2 Familiar':2,'≥3 Comfortable':3,'≥4 Strong':4,'5 Expert only':5};
+  const minScores=[...SS.rm].map(x=>scoreMap[x]).filter(Boolean);
+  const minScore=minScores.length?Math.max(...minScores):0;
+  const onlyMax=SS.rm.has('5 Expert only');
+
+  let data=D.filter(r=>{
+    if(SS.rr.size>0&&!SS.rr.has(r.r))return false;
+    if(SS.rp.size>0&&!SS.rp.has(r.p))return false;
+    if(SS.rl.size>0&&!SS.rl.has(r.loc))return false;
+    if(SS.rc.size>0&&!SS.rc.has(r.ct))return false;
+    if(SS.rg.size>0){const rlangs=r.lg.split('/').map(l=>l.trim());if(!rlangs.some(l=>SS.rg.has(l)))return false;}
+    return true;
+  });
+  // skill filter
+  const selSkills=[...SS.rs].map(lbl=>SK.find(k=>SL[k]===lbl)).filter(Boolean);
+  if(selSkills.length>0){
+    data=data.filter(r=>selSkills.every(sk=>{
+      const v=r.s[sk]||0;
+      if(onlyMax)return v===5;
+      return v>=minScore;
+    }));
+  } else if(minScore>0){
+    data=data.filter(r=>{
+      const vals=Object.values(r.s);
+      if(onlyMax)return vals.some(v=>v===5);
+      return vals.some(v=>v>=minScore);
+    });
+  }
+  const showSk=selSkills.length>0?selSkills:['GenAI','MLSearch','Analytics','VectorSearch','APM','Logs','SIEM','K8s'];
+  let h=`<div class="tw"><table><thead><tr>
+    <th>Region</th><th>Partner</th><th>Resource</th><th>Location/TZ</th><th>Country</th><th>Language</th><th>Delivery</th>
+    ${showSk.map(s=>`<th>${SL[s]}</th>`).join('')}
+    <th>Clearance</th><th>Trainer</th><th>Certs</th></tr></thead><tbody>`;
+  data.forEach(r=>{
+    const certList=['E','A','O','S'].filter(t=>hC(r.c[t])).map(t=>({E:'Eng',A:'Ana',O:'Obs',S:'Sec'}[t]));
+    h+=`<tr><td><span class="b bbl">${r.r}</span></td>
+    <td style="font-weight:600;white-space:nowrap">${r.p}</td>
+    <td style="white-space:nowrap">${r.n}<br><span style="font-size:9px;color:var(--t3)">${r.e}</span></td>
+    <td style="font-size:10px;white-space:nowrap">${r.loc||'—'}</td>
+    <td style="font-size:10px">${r.ct||'—'}</td>
+    <td style="font-size:10px;white-space:nowrap">${r.lg}</td>
+    <td style="font-size:10px">${r.dl}</td>
+    ${showSk.map(sk=>{const v=r.s[sk]||0;return`<td><span class="sc ${sc(v)}">${v}</span></td>`}).join('')}
+    <td style="font-size:10px">${r.cl&&r.cl!='No'&&r.cl!='n/a'&&r.cl?`<span class="b bam">${r.cl}</span>`:r.cl||'—'}</td>
+    <td>${r.tr==='Yes'||r.tr==='yes'?'<span class="b bgn">Yes</span>':'<span class="b bgr">No</span>'}</td>
+    <td style="font-size:10px">${certList.length?certList.map(c=>`<span class="b bgt">${c}</span>`).join(' '):'—'}</td>
+    </tr>`;
+  });
+  h+=`</tbody></table></div><div style="font-size:10px;color:var(--t3);margin-top:5px">Showing ${data.length} of ${D.length} resources. Scores: 5=Expert · 4=Strong · 3=Comfortable · 2=Familiar · 1=Limited · 0=None</div>`;
+  document.getElementById('rs-tbl').innerHTML=h;
+}
+
+// ══════════════════════════════════════════════════════
+// CERTIFICATIONS
+// ══════════════════════════════════════════════════════
+function dCe(){
+  const CT=['E','A','O','S'],CL={E:'Engineer',A:'Analyst',O:'Observability',S:'Security'};
+  const cnt={E:0,A:0,O:0,S:0},exp={E:0,A:0,O:0,S:0},byP={};
+  PARS.forEach(p=>byP[p]=0);
+  D.forEach(r=>{CT.forEach(t=>{const cv=r.c[t];if(hC(cv)){cnt[t]++;byP[r.p]++}if(iE(cv))exp[t]++})});
+  const tot=CT.reduce((s,t)=>s+cnt[t],0),wa=D.filter(r=>CT.some(t=>hC(r.c[t]))).length;
+  document.getElementById('ce-k').innerHTML=`
+    <div class="kc"><div class="kl">Total active certs</div><div class="kv">${tot}</div></div>
+    <div class="kc"><div class="kl">Certified resources</div><div class="kv">${wa}</div><div class="ks">of ${D.length}</div></div>
+    <div class="kc"><div class="kl">Engineer</div><div class="kv">${cnt.E}</div></div>
+    <div class="kc"><div class="kl">Analyst</div><div class="kv">${cnt.A}</div></div>
+    <div class="kc"><div class="kl">Observability</div><div class="kv">${cnt.O}</div></div>
+    <div class="kc"><div class="kl">Security</div><div class="kv">${cnt.S}</div></div>`;
+  const cb=cv=>{if(!cv)return'—';if(iE(cv))return`<span class="b brd">Expired</span>`;if(String(cv).toLowerCase()==='in progress')return`<span class="b bam">In progress</span>`;return`<span class="b bgn">${cv}</span>`};
+  let det=`<div class="tw"><table><thead><tr><th>Resource</th><th>Partner</th><th>Region</th><th>Engineer</th><th>Analyst</th><th>Obs.</th><th>Security</th></tr></thead><tbody>`;
+  D.filter(r=>CT.some(t=>r.c[t])).forEach(r=>{det+=`<tr><td style="font-weight:500;white-space:nowrap">${r.n}</td><td>${r.p}</td><td>${r.r}</td><td>${cb(r.c.E)}</td><td>${cb(r.c.A)}</td><td>${cb(r.c.O)}</td><td>${cb(r.c.S)}</td></tr>`});
+  det+=`</tbody></table></div>`;document.getElementById('ce-det').innerHTML=det;
+  let up='';
+  PARS.forEach(p=>{
+    const res=D.filter(r=>r.p===p),cert=res.filter(r=>CT.some(t=>hC(r.c[t]))).length,expd=res.filter(r=>CT.some(t=>iE(r.c[t]))).length;
+    const pct=res.length?Math.round((cert/res.length)*100):0;
+    if(pct<50||expd>0){
+      const note=[(expd>0?`${expd} expired cert(s) need renewal`:''),pct<30?'Very low cert coverage — urgent investment needed':pct<50?'Below 50% coverage — encourage certification':''  ].filter(Boolean).join('. ');
+      up+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:6px;margin-bottom:6px;background:${pct<30?'var(--rdb)':'var(--amb)'}">
+      <div><div style="font-size:11px;font-weight:600">${p} <span style="font-weight:400;color:var(--t3)">(${cert}/${res.length} — ${pct}%)</span></div><div style="font-size:10px;color:${pct<30?'var(--rd)':'var(--am)'};margin-top:2px">${note}</div></div>
+      <span class="b ${pct<30?'brd':'bam'}">${pct<30?'Urgent':'Review'}</span></div>`;
+    }
+  });
+  document.getElementById('ce-up').innerHTML=up||'<div style="color:var(--gn);font-size:12px;padding:8px">✅ All partners have adequate certification coverage.</div>';
+  setTimeout(()=>{
+    new Chart(document.getElementById('cCT'),{type:'bar',data:{labels:CT.map(t=>CL[t]),datasets:[{label:'Active',data:CT.map(t=>cnt[t]),backgroundColor:'#0077CC',borderRadius:4},{label:'Expired',data:CT.map(t=>exp[t]),backgroundColor:'#E05E5E',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10}}}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+    new Chart(document.getElementById('cCP'),{type:'bar',data:{labels:PARS,datasets:[{data:PARS.map(p=>byP[p]),backgroundColor:CS,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:35}},y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+  },100);
+}
+
+// ══════════════════════════════════════════════════════
+// CAPABILITY INTELLIGENCE
+// ══════════════════════════════════════════════════════
+let ciCharts={ci:null,bd:null};
+function dCi(){
+  const sk=document.getElementById('ci-sk').value;
+  const mn=parseInt(document.getElementById('ci-mn').value)||3;
+  const addSks=[...SS.cs].map(lbl=>SK.find(k=>SL[k]===lbl)).filter(Boolean);
+  const allSks=[sk,...addSks.filter(s=>s!==sk)];
+
+  // Update tags
+  const tagEl=document.getElementById('ci-tags');tagEl.innerHTML='';
+  addSks.forEach(s=>{const t=document.createElement('span');t.className='tag';t.innerHTML=`${SL[s]}<button onclick="rmCiSk('${s}')">×</button>`;tagEl.appendChild(t)});
+
+  // Partner scorecard
+  let sc_h=`<div class="tw"><table><thead><tr><th>Partner</th><th>Avg score</th><th>Resources ≥${mn}</th><th>Expert (5)</th><th>Readiness</th></tr></thead><tbody>`;
+  const ciData=PARS.map(p=>{
+    const res=D.filter(r=>r.p===p);
+    const avg=res.length?parseFloat((res.reduce((s,r)=>s+(r.s[sk]||0),0)/res.length).toFixed(1)):0;
+    const atMin=res.filter(r=>(r.s[sk]||0)>=mn).length;
+    const exp5=res.filter(r=>(r.s[sk]||0)===5).length;
+    const readiness=avg>=4?'Ready':avg>=3?'Developing':'Gap';
+    return{p,res:res.length,avg,atMin,exp5,readiness};
+  }).sort((a,b)=>b.avg-a.avg);
+  ciData.forEach(d=>{
+    const rc=d.readiness==='Ready'?'readiness-ready':d.readiness==='Developing'?'readiness-dev':'readiness-gap';
+    sc_h+=`<tr><td style="font-weight:600">${d.p}</td>
+    <td><div class="cap-row"><div class="cap-bar"><div class="cap-fill" style="width:${(d.avg/5)*100}%;background:${d.avg>=4?'var(--gn)':d.avg>=3?'var(--bl)':'var(--rd)'}"></div></div><span style="font-size:11px;font-weight:600;min-width:28px">${d.avg}</span></div></td>
+    <td style="text-align:center;font-weight:600;color:var(--bl)">${d.atMin}/${d.res}</td>
+    <td style="text-align:center;font-weight:600;color:var(--gn)">${d.exp5}</td>
+    <td><span class="${rc}">${d.readiness}</span></td></tr>`;
+  });
+  sc_h+=`</tbody></table></div><div style="font-size:10px;color:var(--t3);margin-top:5px">Readiness: avg ≥4 = Ready · avg ≥3 = Developing · avg &lt;3 = Gap</div>`;
+  document.getElementById('ci-sc').innerHTML=sc_h;
+
+  // Multi-skill bench
+  if(allSks.length>1){
+    let ms_h=`<div style="font-size:11px;color:var(--t2);margin-bottom:8px">Partners with resources meeting <strong>ALL</strong> selected skills at score ≥ ${mn}:</div>`;
+    ms_h+=`<div class="tw"><table><thead><tr><th>Partner</th><th>Resources meeting ALL skills</th><th>Total resources</th></tr></thead><tbody>`;
+    PARS.forEach(p=>{
+      const res=D.filter(r=>r.p===p);
+      const bench=res.filter(r=>allSks.every(s=>(r.s[s]||0)>=mn));
+      if(res.length>0){ms_h+=`<tr><td style="font-weight:600">${p}</td><td style="text-align:center"><span style="font-size:14px;font-weight:700;color:${bench.length>0?'var(--bl)':'var(--t3)'}">${bench.length}</span></td><td style="text-align:center;color:var(--t3)">${res.length}</td></tr>`}
+    });
+    ms_h+=`</tbody></table></div>`;
+    document.getElementById('ci-ms').innerHTML=ms_h;
+  } else {
+    document.getElementById('ci-ms').innerHTML=`<div style="color:var(--t3);font-size:12px;padding:8px">Add more skills using the filter above to see multi-skill bench strength analysis.</div>`;
+  }
+
+  // Charts
+  setTimeout(()=>{
+    if(ciCharts.ci)ciCharts.ci.destroy();
+    if(ciCharts.bd)ciCharts.bd.destroy();
+    ciCharts.ci=new Chart(document.getElementById('cCI'),{
+      type:'bar',
+      data:{labels:ciData.map(d=>d.p),datasets:[
+        {label:'Avg score',data:ciData.map(d=>d.avg),backgroundColor:ciData.map(d=>d.avg>=4?'#0D8A59':d.avg>=3?'#0077CC':'#E05E5E'),borderRadius:4}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:8},maxRotation:40}},y:{min:0,max:5,ticks:{stepSize:1}}}}
+    });
+    // Bench depth — resources ≥4 per skill domain
+    const domains={Search:['GenAI','MLSearch'],Security:['SIEM','SecAnal','Endpoint'],Observability:['APM','Logs'],Infra:['K8s','Docker','ECK']};
+    const topPars=PARS.slice(0,8);
+    const domKeys=Object.keys(domains);
+    ciCharts.bd=new Chart(document.getElementById('cBD'),{
+      type:'bar',
+      data:{labels:topPars,datasets:domKeys.map((d,i)=>({
+        label:d,data:topPars.map(p=>{const res=D.filter(r=>r.p===p);return res.filter(r=>domains[d].some(s=>(r.s[s]||0)>=4)).length}),
+        backgroundColor:CS[i],borderRadius:3,stack:'s'
+      }))},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9},boxWidth:10}}},scales:{x:{ticks:{font:{size:8},maxRotation:40},stacked:true},y:{beginAtZero:true,stacked:true}}}
+    });
+  },100);
+}
+function rmCiSk(sk){
+  SS.cs.delete(SL[sk]);
+  const dd=document.getElementById('md-cs');
+  if(dd){const cb=dd.querySelector(`input[value="${SL[sk]}"]`);if(cb)cb.checked=false;}
+  updBtn('mp-cs','cs');dCi();
+}
+
+// ══════════════════════════════════════════════════════
+// HIRING STRATEGY
+// ══════════════════════════════════════════════════════
+function dHi(){
+  const bR={};D.forEach(r=>{if(!bR[r.r])bR[r.r]={n:0,t:{}};bR[r.r].n++;SK.forEach(s=>{bR[r.r].t[s]=(bR[r.r].t[s]||0)+(r.s[s]||0)})});
+  let mt=`<div class="tw"><table><thead><tr><th>Region</th><th>Resources</th><th>Strengths (avg≥4)</th><th>Top gaps (avg&lt;2.5)</th><th>Priority</th></tr></thead><tbody>`;
+  Object.entries(bR).forEach(([reg,d])=>{
+    const str=SK.filter(s=>(d.t[s]/d.n)>=4).map(s=>SL[s]),gaps=SK.filter(s=>(d.t[s]/d.n)<2.5).map(s=>SL[s]);
+    const pr=gaps.length>=10?'High':gaps.length>=5?'Medium':'Low';
+    mt+=`<tr><td><span class="b bbl">${reg}</span></td><td style="text-align:center;font-weight:600">${d.n}</td>
+    <td style="font-size:10px">${str.slice(0,4).join(', ')}${str.length>4?` +${str.length-4} more`:''}</td>
+    <td style="font-size:10px">${gaps.slice(0,4).join(', ')}${gaps.length>4?` +${gaps.length-4} more`:''}</td>
+    <td><span class="b ${pr==='High'?'brd':pr==='Medium'?'bam':'bgn'}">${pr}</span></td></tr>`;
+  });
+  mt+=`</tbody></table></div>`;document.getElementById('hi-mt').innerHTML=mt;
+  let gp='';
+  Object.entries(bR).forEach(([reg,d])=>{
+    const gaps=SK.filter(s=>(d.t[s]/d.n)<2.5).map(s=>SL[s]);if(!gaps.length)return;
+    gp+=`<div style="margin-bottom:10px"><div style="font-size:12px;font-weight:600;margin-bottom:4px">${reg} <span style="color:var(--t3);font-weight:400;font-size:10px">(${d.n} resources)</span></div>${gaps.map(g=>`<span class="gc ${gaps.length>=10?'gc-h':'gc-m'}">${g}</span>`).join('')}</div>`;
+  });
+  document.getElementById('hi-gp').innerHTML=gp||'<div style="color:var(--gn);font-size:12px">No critical gaps found.</div>';
+  const topSks=['GenAI','MLSearch','SIEM','SecAnal','VectorSearch','K8s','Docker','ECK','CloudMig','Arch'];
+  let hm=`<table style="font-size:10px;border-collapse:collapse;margin-bottom:6px"><thead><tr><th style="padding:5px 8px;background:#F7F8FA;border:1px solid var(--bd)">Partner</th>`;
+  topSks.forEach(s=>hm+=`<th style="padding:5px 8px;background:#F7F8FA;border:1px solid var(--bd);white-space:nowrap">${SL[s]}</th>`);
+  hm+=`</tr></thead><tbody>`;
+  PARS.forEach(p=>{
+    const res=D.filter(r=>r.p===p);if(!res.length)return;
+    hm+=`<tr><td style="padding:5px 8px;font-weight:600;border:1px solid var(--bd);white-space:nowrap">${p}</td>`;
+    topSks.forEach(s=>{
+      const avg=parseFloat((res.reduce((sum,r)=>sum+(r.s[s]||0),0)/res.length).toFixed(1));
+      const bg=avg>=4?'#0D8A59':avg>=3?'#0077CC':avg>=2?'#D4730A':'#C0392B';
+      hm+=`<td style="padding:5px 8px;text-align:center;background:${bg};color:#fff;border:1px solid rgba(255,255,255,.2);font-weight:700">${avg}</td>`;
+    });
+    hm+=`</tr>`;
+  });
+  hm+=`</tbody></table><div style="font-size:10px;color:var(--t3)">■ ≥4 Strong&nbsp;&nbsp;■ ≥3 Comfortable&nbsp;&nbsp;■ ≥2 Familiar&nbsp;&nbsp;■ &lt;2 Gap</div>`;
+  document.getElementById('hi-hm').innerHTML=hm;
+}
+
+// ══════════════════════════════════════════════════════
+// TAB ROUTING
+// ══════════════════════════════════════════════════════
+function showTab(id,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('s-'+id).classList.add('on');btn.classList.add('on');
+  if(id==='pt')dPt();if(id==='rs')dRs();if(id==='ce')dCe();if(id==='ci')dCi();if(id==='hi')dHi();
+}
+
+// BOOT
+init();dOv();dRs();
+</script>
+</body>
+</html>
