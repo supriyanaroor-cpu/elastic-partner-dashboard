@@ -4,7 +4,148 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elastic Partner Skills Dashboard — FY'27</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// Lightweight chart replacement - no CDN needed
+window.Chart = class Chart {
+  constructor(canvas, config) {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const {type, data, options} = config;
+    const w = canvas.width || canvas.offsetWidth || 300;
+    const h = canvas.height || canvas.offsetHeight || 200;
+    canvas.width = w; canvas.height = h;
+    ctx.clearRect(0,0,w,h);
+    
+    if (type === 'doughnut') this._doughnut(ctx, w, h, data, options);
+    else if (type === 'bar') this._bar(ctx, w, h, data, options);
+    else if (type === 'radar') this._radar(ctx, w, h, data, options);
+    else if (type === 'polarArea') this._polar(ctx, w, h, data, options);
+  }
+  
+  _doughnut(ctx, w, h, data, opts) {
+    const labels = data.labels || [];
+    const vals = data.datasets[0].data || [];
+    const colors = data.datasets[0].backgroundColor || ['#0077CC','#0D8A59','#F04E98','#D4730A','#6D28D9','#00BFB3'];
+    const total = vals.reduce((a,b)=>a+b,0);
+    if (!total) return;
+    const cx = w * 0.38, cy = h/2, r = Math.min(cx, cy) * 0.85, ir = r * 0.55;
+    let angle = -Math.PI/2;
+    vals.forEach((v,i) => {
+      const slice = (v/total) * Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,angle,angle+slice);
+      ctx.closePath();
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx,cy,ir,0,Math.PI*2);
+      ctx.fillStyle='#fff';
+      ctx.fill();
+      angle += slice;
+    });
+    // Center text
+    ctx.fillStyle='#1A1F36';
+    ctx.font=`bold ${Math.round(r*0.3)}px Arial`;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(total, cx, cy);
+    // Legend
+    const lx = w * 0.72, ly = cy - (labels.length * 14)/2;
+    labels.forEach((lbl,i) => {
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fillRect(lx, ly + i*18, 10, 10);
+      ctx.fillStyle='#1A1F36';
+      ctx.font='9px Arial';
+      ctx.textAlign='left';
+      ctx.textBaseline='top';
+      ctx.fillText(`${lbl} (${vals[i]})`, lx+14, ly + i*18);
+    });
+  }
+  
+  _bar(ctx, w, h, data, opts) {
+    const labels = data.labels || [];
+    const vals = data.datasets[0].data || [];
+    const colors = data.datasets[0].backgroundColor || ['#0077CC'];
+    const padL=36, padB=50, padT=10, padR=10;
+    const chartW = w-padL-padR, chartH = h-padB-padT;
+    const maxV = Math.max(...vals, 1);
+    const barW = Math.max(4, (chartW / labels.length) * 0.65);
+    const gap = chartW / labels.length;
+    // Grid lines
+    ctx.strokeStyle='#E2E8F0'; ctx.lineWidth=1;
+    [0,0.25,0.5,0.75,1].forEach(f => {
+      const y = padT + chartH * (1-f);
+      ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+chartW,y); ctx.stroke();
+      ctx.fillStyle='#8892A4'; ctx.font='8px Arial'; ctx.textAlign='right';
+      ctx.fillText(Math.round(maxV*f), padL-4, y+3);
+    });
+    vals.forEach((v,i) => {
+      const bh = (v/maxV) * chartH;
+      const x = padL + gap*i + (gap-barW)/2;
+      const y = padT + chartH - bh;
+      const col = Array.isArray(colors) ? colors[i % colors.length] : colors;
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(x,y,barW,bh,3) : ctx.rect(x,y,barW,bh);
+      ctx.fill();
+      // Label
+      ctx.fillStyle='#4A5568'; ctx.font='8px Arial'; ctx.textAlign='center';
+      const lbl = labels[i] || '';
+      ctx.save(); ctx.translate(x+barW/2, padT+chartH+6);
+      ctx.rotate(-0.6); ctx.fillText(lbl.length>8?lbl.slice(0,8)+'…':lbl, 0, 0);
+      ctx.restore();
+      // Value
+      if (v > 0) { ctx.fillStyle='#1A1F36'; ctx.font='bold 8px Arial'; ctx.textAlign='center'; ctx.fillText(v, x+barW/2, y-3); }
+    });
+  }
+  
+  _radar(ctx, w, h, data, opts) {
+    const labels = data.labels || [];
+    const n = labels.length;
+    if (!n) return;
+    const cx=w/2, cy=h/2, r=Math.min(w,h)*0.38;
+    // Draw spokes
+    labels.forEach((_,i) => {
+      const a = (i/n)*Math.PI*2 - Math.PI/2;
+      ctx.beginPath(); ctx.strokeStyle='#E2E8F0'; ctx.lineWidth=1;
+      ctx.moveTo(cx,cy); ctx.lineTo(cx+r*Math.cos(a), cy+r*Math.sin(a)); ctx.stroke();
+      ctx.fillStyle='#4A5568'; ctx.font='8px Arial'; ctx.textAlign='center';
+      ctx.fillText(labels[i].slice(0,8), cx+(r+14)*Math.cos(a), cy+(r+14)*Math.sin(a));
+    });
+    // Rings
+    [0.2,0.4,0.6,0.8,1].forEach(f => {
+      ctx.beginPath(); ctx.strokeStyle='#E2E8F0';
+      labels.forEach((_,i) => {
+        const a=(i/n)*Math.PI*2-Math.PI/2;
+        i===0?ctx.moveTo(cx+r*f*Math.cos(a),cy+r*f*Math.sin(a)):ctx.lineTo(cx+r*f*Math.cos(a),cy+r*f*Math.sin(a));
+      }); ctx.closePath(); ctx.stroke();
+    });
+    // Datasets
+    data.datasets.forEach((ds,di) => {
+      const vals = ds.data || [];
+      const maxV = 5;
+      ctx.beginPath();
+      vals.forEach((v,i) => {
+        const a=(i/n)*Math.PI*2-Math.PI/2, frac=v/maxV;
+        const px=cx+r*frac*Math.cos(a), py=cy+r*frac*Math.sin(a);
+        i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+      });
+      ctx.closePath();
+      ctx.fillStyle=(ds.backgroundColor||'rgba(0,119,204,0.2)');
+      ctx.fill();
+      ctx.strokeStyle=(ds.borderColor||'#0077CC'); ctx.lineWidth=2; ctx.stroke();
+    });
+  }
+  
+  _polar(ctx, w, h, data, opts) {
+    this._doughnut(ctx, w, h, data, opts);
+  }
+  
+  destroy() {}
+  update() {}
+};
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 :root{
