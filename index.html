@@ -154,6 +154,13 @@ select:focus,input:focus{border-color:var(--el)}
   .nb{padding:10px 10px;font-size:11px}
   .sec{padding:16px}
 }
+
+/* ── Multi-select chips ── */
+.chip-group{display:flex;flex-wrap:wrap;gap:4px}
+.chip-item{padding:3px 10px;border-radius:12px;border:1.5px solid #D0D5E0;background:#fff;
+           color:#4A5568;font-size:11px;cursor:pointer;user-select:none;transition:all .12s;font-weight:500}
+.chip-item:hover{border-color:#0077CC;color:#0077CC;background:#EBF5FF}
+.chip-item.active{background:#0077CC;border-color:#0077CC;color:#fff;font-weight:700}
 </style>
 </head>
 <body>
@@ -440,30 +447,41 @@ function buildOverview(){
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB 2: PARTNER SKILLS (Resources & Skills with filters)
 // ══════════════════════════════════════════════════════════════════════════════
-function buildSkillFilters(){
-  const rSel = document.getElementById('f-region');
-  const pSel = document.getElementById('f-partner');
-  const lSel = document.getElementById('f-loc');
-  const skSel = document.getElementById('f-skill');
-  const scSel = document.getElementById('f-score');
+// Track multi-select state
+const selRg=new Set(), selPt=new Set(), selLc=new Set();
 
-  REGS.forEach(r=>{ const o=document.createElement('option');o.value=r;o.textContent=r;rSel.appendChild(o); });
-  PARS.forEach(p=>{ const o=document.createElement('option');o.value=p;o.textContent=p;pSel.appendChild(o); });
-  LOCS.slice(0,30).forEach(l=>{ const o=document.createElement('option');o.value=l;o.textContent=l;lSel.appendChild(o); });
+function mkChips(containerId, values, stateSet){
+  const el=document.getElementById(containerId);
+  values.forEach(v=>{
+    const c=document.createElement('div');
+    c.className='chip-item';
+    c.textContent=v;
+    c.onclick=()=>{
+      c.classList.toggle('active');
+      if(c.classList.contains('active')) stateSet.add(v);
+      else stateSet.delete(v);
+      applySkillFilter();
+    };
+    el.appendChild(c);
+  });
+}
+
+function buildSkillFilters(){
+  const skSel = document.getElementById('f-skill');
   SK_KEYS.forEach((k,i)=>{ const o=document.createElement('option');o.value=k;o.textContent=SK_LABELS[i];skSel.appendChild(o); });
+  mkChips('chips-rg', REGS, selRg);
+  mkChips('chips-pt', PARS, selPt);
+  mkChips('chips-lc', LOCS.slice(0,25), selLc);
 }
 
 function applySkillFilter(){
-  const region  = document.getElementById('f-region').value;
-  const partner = document.getElementById('f-partner').value;
-  const loc     = document.getElementById('f-loc').value;
   const skill   = document.getElementById('f-skill').value;
   const minScore= parseInt(document.getElementById('f-score').value)||0;
 
   let data = D;
-  if(region)  data = data.filter(d=>d.r===region);
-  if(partner) data = data.filter(d=>d.p===partner);
-  if(loc)     data = data.filter(d=>d.loc===loc);
+  if(selRg.size>0)  data = data.filter(d=>selRg.has(d.r));
+  if(selPt.size>0)  data = data.filter(d=>selPt.has(d.p));
+  if(selLc.size>0)  data = data.filter(d=>selLc.has(d.loc));
   if(skill && minScore>0) data = data.filter(d=>(d.s[skill]||0)>=minScore);
 
   const showKeys = skill ? [skill] :
@@ -504,9 +522,10 @@ function applySkillFilter(){
 }
 
 function resetSkillFilter(){
-  ['f-region','f-partner','f-loc','f-skill','f-score'].forEach(id=>{
-    document.getElementById(id).value='';
-  });
+  selRg.clear(); selPt.clear(); selLc.clear();
+  document.querySelectorAll('.chip-item').forEach(c=>c.classList.remove('active'));
+  document.getElementById('f-skill').value='';
+  document.getElementById('f-score').value='0';
   applySkillFilter();
 }
 
@@ -625,6 +644,8 @@ function buildCerts(){
 // ══════════════════════════════════════════════════════════════════════════════
 function buildPartnerAnalysis(){
   const container = document.getElementById('pa-cards');
+  const paSel = document.getElementById('pa-select');
+  PARS.forEach(p=>{ const o=document.createElement('option');o.value=p;o.textContent=p;paSel.appendChild(o); });
   let html = '';
 
   PARS.forEach((p,pi)=>{
@@ -645,7 +666,7 @@ function buildPartnerAnalysis(){
     const strengths = skillAvgs.filter(x=>x.v>=3.5).sort((a,b)=>b.v-a.v).slice(0,5);
     const gaps = skillAvgs.filter(x=>x.v<2.0 && x.v>=0).sort((a,b)=>a.v-b.v).slice(0,5);
 
-    html += `<div class="partner-card" style="border-left-color:${col}">
+    html += `<div class="partner-card" style="border-left-color:${col}" data-partner="${p}">
       <div class="pc-name">${p}</div>
       <div class="pc-region"><span class="region-pill ${region==='EMEA'?'r-emea':'r-apac'}">${region}</span></div>
       <div class="pc-stats">
@@ -826,6 +847,17 @@ function buildHiring(){
 // ══════════════════════════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════════════════════════
+function filterPartnerCards(){
+  const sel = document.getElementById('pa-select').value;
+  document.querySelectorAll('.partner-card').forEach(card=>{
+    if(!sel || card.dataset.partner===sel){
+      card.style.display='';
+    } else {
+      card.style.display='none';
+    }
+  });
+}
+
 window.addEventListener('DOMContentLoaded',()=>{
   buildOverview();
   buildSkillFilters();
@@ -863,35 +895,40 @@ window.addEventListener('DOMContentLoaded',()=>{
 
 <!-- ══ PARTNER SKILLS ════════════════════════════════════════════════════════ -->
 <section id="s-rs" class="sec">
-  <div class="fbar">
-    <div class="fg">
-      <div class="fl">Region</div>
-      <select id="f-region"><option value="">All regions</option></select>
+  <!-- Multi-select filter bar -->
+  <div class="fbar" style="flex-direction:column;gap:10px">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start">
+      <div class="fg" style="min-width:200px">
+        <div class="fl">Region (multi-select)</div>
+        <div id="chips-rg" class="chip-group" style="margin-top:4px"></div>
+      </div>
+      <div class="fg" style="flex:2;min-width:300px">
+        <div class="fl">Partner (multi-select)</div>
+        <div id="chips-pt" class="chip-group" style="margin-top:4px"></div>
+      </div>
+      <div class="fg" style="flex:2;min-width:300px">
+        <div class="fl">Location/TZ (multi-select)</div>
+        <div id="chips-lc" class="chip-group" style="margin-top:4px;max-height:60px;overflow-y:auto"></div>
+      </div>
     </div>
-    <div class="fg">
-      <div class="fl">Partner</div>
-      <select id="f-partner"><option value="">All partners</option></select>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
+      <div class="fg" style="min-width:180px">
+        <div class="fl">Required Skill</div>
+        <select id="f-skill"><option value="">Any skill</option></select>
+      </div>
+      <div class="fg" style="min-width:150px">
+        <div class="fl">Min Score</div>
+        <select id="f-score">
+          <option value="0">Any score</option>
+          <option value="2">≥ 2 Familiar</option>
+          <option value="3">≥ 3 Comfortable</option>
+          <option value="4">≥ 4 Strong</option>
+          <option value="5">= 5 Expert</option>
+        </select>
+      </div>
+      <button class="btn-filter" onclick="applySkillFilter()">Apply Filter</button>
+      <button class="btn-reset" onclick="resetSkillFilter()">↺ Reset All</button>
     </div>
-    <div class="fg">
-      <div class="fl">Location/TZ</div>
-      <select id="f-loc"><option value="">All locations</option></select>
-    </div>
-    <div class="fg">
-      <div class="fl">Required Skill</div>
-      <select id="f-skill"><option value="">Any skill</option></select>
-    </div>
-    <div class="fg">
-      <div class="fl">Min Score</div>
-      <select id="f-score">
-        <option value="0">Any score</option>
-        <option value="2">≥ 2 Familiar</option>
-        <option value="3">≥ 3 Comfortable</option>
-        <option value="4">≥ 4 Strong</option>
-        <option value="5">= 5 Expert</option>
-      </select>
-    </div>
-    <button class="btn-filter" onclick="applySkillFilter()">Apply Filter</button>
-    <button class="btn-reset" onclick="resetSkillFilter()">Reset</button>
   </div>
   <div style="font-size:11px;color:#8892A4;margin-bottom:10px">
     Showing: <strong id="rs-count">111 of 111 resources</strong>
@@ -914,8 +951,16 @@ window.addEventListener('DOMContentLoaded',()=>{
 
 <!-- ══ PARTNER ANALYSIS ══════════════════════════════════════════════════════ -->
 <section id="s-pa" class="sec">
-  <div style="font-size:12px;color:#4A5568;margin-bottom:16px">
-    Skill strengths and gaps per partner — use this to identify which partner to engage for specific project requirements.
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <div class="fg" style="min-width:220px">
+      <div class="fl">Select Partner</div>
+      <select id="pa-select" onchange="filterPartnerCards()" style="font-size:13px;padding:7px 12px;border-radius:7px;border:2px solid #0077CC;font-weight:600;color:#0077CC">
+        <option value="">All Partners</option>
+      </select>
+    </div>
+    <div style="font-size:11px;color:#8892A4;padding-top:18px">
+      Select a partner to view their detailed skill analysis
+    </div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:24px"
        id="pa-cards"></div>
